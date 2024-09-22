@@ -1,56 +1,64 @@
-import React, { useState } from 'react'
-import {assets} from '../assets/assets_frontend/assets'
-import { NavLink, useNavigate } from 'react-router-dom'
-import AccountMenu from './AccountMenu'
-const Navbar = () => {
-    const navigate = useNavigate()
-    const [showMenu, setShowMenu] = useState(false)
-    const [token, setToken] = useState(false)
-    const handleMenu = () => setShowMenu(!showMenu)
+import React, { useState, useEffect } from 'react';
+import { NavLink, useNavigate, useMatch, useResolvedPath } from 'react-router-dom';
+import { assets } from '../assets/assets_frontend/assets';
+import AccountMenu from './AccountMenu';
+
+const NavItem = ({ to, children }) => {
+  const resolved = useResolvedPath(to);
+  const match = useMatch({ path: resolved.pathname, end: true });
+
   return (
-    <div className='relative'>
+    <NavLink 
+      to={to} 
+      className={`relative py-1 ${match ? 'text-primary' : ''}`}
+    >
+      {children}
+      <hr className={`absolute bottom-0 left-1/2 transform -translate-x-1/2 border-none outline-none h-0.5 bg-primary w-3/5 transition-opacity duration-300 ${match ? 'opacity-100' : 'opacity-0'}`} />
+    </NavLink>
+  );
+};
 
-    <div className='flex items-center justify-between text-sm py-2 mb-5 '>
-      <img className='w-44 cursor-pointer' src={assets.logo1} alt=""/>
-      <ul className='hidden md:flex items-start gap-5 font-medium'>
-        <NavLink to='/'>
-            <li className='py-1'>Home</li>
-            <hr className='border-none outline-none h-0.5 bg-primary w-3/5 m-auto hidden'/>    
-        </NavLink>
-        <NavLink to='/doctors'>
-            <li className='py-1'>Doctors</li>
-            <hr className='border-none outline-none h-0.5 bg-primary w-3/5 m-auto hidden'/>    
-        </NavLink>
-        <NavLink to='/medical-history'>
-            <li className='py-1'>History</li>
-            <hr className='border-none outline-none h-0.5 bg-primary w-3/5 m-auto hidden'/>
-        </NavLink>
-        <NavLink to='/contact'>
-            <li className='py-1'>Contact</li>
-            <hr className='border-none outline-none h-0.5 bg-primary w-3/5 m-auto hidden'/>    
-        </NavLink>
-        <NavLink to='/about'>
-            <li className='py-1'>About Us</li>
-            <hr className='border-none outline-none h-0.5 bg-primary w-3/5 m-auto hidden'/>    
-        </NavLink>
-      </ul>
-      <div className='flex items-center gap-4 '>
-        {
-            token? <div className='flex gap-2 cursor-pointer items-center relative group'>
-               
-                <div className=''>
-                    <AccountMenu setToken={setToken}/>
-                    
-                    
-                </div>
-            </div> : <button onClick={()=>navigate('/auth')}  className='bg-primary text-white px-8 py-3 rounded-full font-light hidden md:block'>Create Account</button>
-        }
-        
-      </div>
-    </div>
+const Navbar = ({visibility}) => {
+  const navigate = useNavigate();
+  const [token, setToken] = useState(false);
+
+  useEffect(() => {
+    // Check for token in localStorage or your auth state management
+    const storedToken = localStorage.getItem('token');
+    setToken(!!storedToken);
+  }, []);
+
+  return (
+    <nav className="sticky top-0 bg-white z-10 shadow-sm">
+      <div className="container  px-4">
+        <div className="flex items-center justify-between py-4">
+          <img className="w-44 cursor-pointer" src={assets.logo1} alt="Logo" onClick={() => navigate('/')} />
             
-    </div>
-  )
-}
+          <ul className="hidden md:flex items-center space-x-6 font-medium">
+            <NavItem to="/">Home</NavItem>
+            <NavItem to="/doctors">Doctors</NavItem>
+            <NavItem to="/medical-history">History</NavItem>
+            <NavItem to="/contact">Contact</NavItem>
+            <NavItem to="/about">About Us</NavItem>
+          </ul>
+          
+          <div className="flex items-center">
+            {token ? (
+              <AccountMenu setToken={setToken} />
+            ) : (
+              <button
+                onClick={() => navigate('/auth')}
+                className="bg-primary text-white px-6 py-2 rounded-full font-medium hover:bg-primary-dark transition duration-300 ease-in-out"
+              >
+                Create Account
+              </button>
+            )}
+          </div>
+          </div> 
+          
+      </div>
+    </nav>
+  );
+};
 
-export default Navbar
+export default Navbar;

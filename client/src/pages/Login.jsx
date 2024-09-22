@@ -6,8 +6,15 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { Label } from "@/components/ui/label";
 import { User, UserPlus, Stethoscope, ShieldCheck } from 'lucide-react';
 import { GoogleLogin } from '@react-oauth/google';
+import {useAuth} from '../context/AuthContext'
+import { useNavigate } from 'react-router-dom';
+import { Navbar } from '@material-tailwind/react';
+
 
 const Login = () => {
+
+  const navigate = useNavigate();
+  const { login, signup, googleSignIn } = useAuth();
   const [isSignUp, setIsSignUp] = useState(false);
   const [role, setRole] = useState('patient');
   const [formData, setFormData] = useState({
@@ -21,10 +28,20 @@ const Login = () => {
     emrSystem: ''
   });
 
-  const handleGoogleSuccess = (credentialResponse) => {
+  const handleGoogleSuccess = async (credentialResponse) => {
     console.log('Google Sign-In Successful:', credentialResponse);
-    // Here you would typically send the credentialResponse.credential to your backend
-    // for verification and to create or authenticate the user in your system
+    try {
+      const response = await googleSignIn(credentialResponse.credential);
+      console.log('Google Sign-In response:', response);
+      
+      // Handle successful sign-in
+      // This might include updating UI, redirecting, etc.
+      navigate('/home'); // or wherever you want to redirect after successful login
+    } catch (error) {
+      console.error('Error during Google Sign-In:', error);
+      console.error('Error details:', error.response?.data);
+      // Handle the error, maybe show a notification to the user
+    }
   };
 
   const handleGoogleError = () => {
@@ -44,12 +61,38 @@ const Login = () => {
     }));
   };
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
-    console.log(formData);
     const endpoint = getEndpoint();
-    console.log(`Submitting to endpoint: ${endpoint}`);
-    // Implement API call to the endpoint here
+    try {
+      let response;
+      if (isSignUp) {
+        response = await signup(formData);
+      } else {
+        response = await login(formData);
+      }
+      
+      if (response.success) {
+        switch (role) {
+          case 'patient':
+            navigate('/home');
+            break;
+          case 'doctor':
+            navigate('/doctor-page');
+            break;
+          case 'admin':
+            navigate('/admin-page');
+            break;
+          default:
+            navigate('/');
+        }
+      } else {
+        console.error('Authentication error:', error);
+      }
+    } catch (error) {
+      console.error('Authentication error:', error);
+      // Handle error (e.g., show error message)
+    }
   };
 
   const getEndpoint = () => {
@@ -86,7 +129,8 @@ const Login = () => {
   };
 
   return (
-    <div className='mt-20 flex items-center justify-center min-h-screen  from-blue-100 to-indigo-100'>
+    <div className='mt-20 flex gap-3 items-center justify-center min-h-screen  from-blue-100 to-indigo-100'>
+      
       <Card className="w-[500px] bg-white shadow-lg hover:shadow-xl transition-shadow duration-300 overflow-hidden">
         <CardHeader className="bg-gradient-to-r from-blue-500 to-indigo-500 text-white p-6">
           <CardTitle className="text-2xl font-bold text-center">{getWelcomeMessage()}</CardTitle>
