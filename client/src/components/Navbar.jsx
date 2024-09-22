@@ -5,7 +5,7 @@ import AccountMenu from './AccountMenu'
 const Navbar = () => {
     const navigate = useNavigate()
     const [showMenu, setShowMenu] = useState(false)
-    const [token, setToken] = useState(true)
+    const [token, setToken] = useState(false)
     const handleMenu = () => setShowMenu(!showMenu)
   return (
     <div className='relative'>
@@ -43,7 +43,7 @@ const Navbar = () => {
                     
                     
                 </div>
-            </div> : <button onClick={()=>navigate('/login')}  className='bg-primary text-white px-8 py-3 rounded-full font-light hidden md:block'>Create Account</button>
+            </div> : <button onClick={()=>navigate('/auth')}  className='bg-primary text-white px-8 py-3 rounded-full font-light hidden md:block'>Create Account</button>
         }
         
       </div>

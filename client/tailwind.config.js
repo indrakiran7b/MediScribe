@@ -7,17 +7,20 @@ export default {
   ],
   theme: {
   	extend: {
-		fontFamily: {
-			manrope: ['Manrope', 'sans-serif'],  // Define the font here
-		  },
+  		fontFamily: {
+  			manrope: ['Manrope', 'sans-serif']
+  		},
   		borderRadius: {
   			lg: 'var(--radius)',
   			md: 'calc(var(--radius) - 2px)',
   			sm: 'calc(var(--radius) - 4px)'
   		},
   		colors: {
-			primary:'#5f6FFF',
-			new_color:'#1B3357',
+  			primary: {
+  				DEFAULT: 'hsl(var(--primary))',
+  				foreground: 'hsl(var(--primary-foreground))'
+  			},
+  			new_color: '#1B3357',
   			background: 'hsl(var(--background))',
   			foreground: 'hsl(var(--foreground))',
   			card: {
@@ -28,10 +31,6 @@ export default {
   				DEFAULT: 'hsl(var(--popover))',
   				foreground: 'hsl(var(--popover-foreground))'
   			},
-  			// primary: {
-  			// 	DEFAULT: 'hsl(var(--primary))',
-  			// 	foreground: 'hsl(var(--primary-foreground))'
-  			// },
   			secondary: {
   				DEFAULT: 'hsl(var(--secondary))',
   				foreground: 'hsl(var(--secondary-foreground))'
