@@ -6,15 +6,12 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { Label } from "@/components/ui/label";
 import { User, UserPlus, Stethoscope, ShieldCheck } from 'lucide-react';
 import { GoogleLogin } from '@react-oauth/google';
-import {useAuth} from '../context/AuthContext'
+import { useAuth } from '../context/AuthContext';
 import { useNavigate } from 'react-router-dom';
-import { Navbar } from '@material-tailwind/react';
-
 
 const Login = () => {
-
   const navigate = useNavigate();
-  const { login, signup, googleSignIn } = useAuth();
+  const { login, signup, googleSignIn, error } = useAuth();
   const [isSignUp, setIsSignUp] = useState(false);
   const [role, setRole] = useState('patient');
   const [formData, setFormData] = useState({
@@ -63,19 +60,24 @@ const Login = () => {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    const endpoint = getEndpoint();
+    const endpoint = getEndpoint(); // Make sure this function is defined
+    const submitData = { ...formData, userType: role };
+    console.log(submitData);
+
     try {
       let response;
       if (isSignUp) {
-        response = await signup(formData);
+        response = await signup(submitData);
       } else {
-        response = await login(formData);
+        response = await login(submitData);
       }
-      
-      if (response.success) {
+      console.log(response)
+      if (response && response.token) {
+        // Store the token in localStorage or in your auth context
+        localStorage.setItem('token', response.token);
         switch (role) {
           case 'patient':
-            navigate('/home');
+            navigate('/');
             break;
           case 'doctor':
             navigate('/doctor-page');
@@ -87,11 +89,11 @@ const Login = () => {
             navigate('/');
         }
       } else {
-        console.error('Authentication error:', error);
+        console.error('Authentication failed:', response.message);
       }
-    } catch (error) {
-      console.error('Authentication error:', error);
-      // Handle error (e.g., show error message)
+    } catch (err) {
+      console.error('Authentication error:', err.message);
+      // You can set a local error state here if you want to display it in the component
     }
   };
 

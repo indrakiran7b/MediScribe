@@ -10,7 +10,7 @@ export const AuthProvider = ({ children }) => {
   const [error, setError] = useState(null);
 
   const api = axios.create({
-    baseURL: 'http://localhost:3000/api',  // Make sure this matches your backend URL
+    baseURL: 'http://localhost:5000',  // Make sure this matches your backend URL
     headers: {
       'Content-Type': 'application/json',
     },
@@ -20,11 +20,11 @@ export const AuthProvider = ({ children }) => {
   const login = async (credentials) => {
     setLoading(true);
     setError(null);
-    
+    console.log('credentials',credentials)
     try {
       const response = await api.post('/auth/login', credentials);
-      console.log(response.data.data);
-      setUser(response.data.data.user);
+      console.log('response-data',response.data);
+      setUser(response.data.userType);
       localStorage.setItem('token', response.data.token);
       api.defaults.headers.common['Authorization'] = `Bearer ${response.data.token}`;
       setLoading(false);
@@ -41,7 +41,7 @@ export const AuthProvider = ({ children }) => {
     setError(null);
     try {
       const response = await api.post('/auth/signup', userData);
-      setUser(response.data.data.user);
+      setUser(response.data.userType);
       localStorage.setItem('token', response.data.token);
       api.defaults.headers.common['Authorization'] = `Bearer ${response.data.token}`;
       setLoading(false);
@@ -80,7 +80,7 @@ export const AuthProvider = ({ children }) => {
       api.defaults.headers.common['Authorization'] = `Bearer ${token}`;
       try {
         const response = await api.get('/auth/me'); // Assuming you have a /me endpoint to get user data
-        setUser(response.data.data.user);
+        setUser(response.data.userType);
       } catch (err) {
         console.error('Error checking auth status:', err);
         logout(); // If token is invalid or expired, log out the user
