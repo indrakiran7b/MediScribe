@@ -1,4 +1,4 @@
-import React, { createContext, useContext, useState } from 'react';
+import React, { createContext, useContext, useState, useEffect } from 'react';
 import axios from 'axios';
 
 const AuthContext = createContext();
@@ -8,6 +8,16 @@ export const AuthProvider = ({ children }) => {
   const [user, setUser] = useState(null);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
+  const [token, setToken] = useState(null);
+
+  // Check for token on app load
+  useEffect(() => {
+    const storedToken = localStorage.getItem('token');
+    if (storedToken) {
+      setToken(storedToken);
+      axios.defaults.headers.common['Authorization'] = `Bearer ${storedToken}`;
+    }
+  }, []);
 
   const api = axios.create({
     baseURL: 'http://localhost:5000',  // Make sure this matches your backend URL
@@ -25,7 +35,14 @@ export const AuthProvider = ({ children }) => {
       const response = await api.post('/auth/login', credentials);
       console.log('response-data',response.data);
       setUser(response.data.userType);
+      // newToken = response.data.token
       localStorage.setItem('token', response.data.token);
+      if (response.data.token){
+        setToken(response.data.token)
+      }
+      else{
+        setToken(null)
+      }
       api.defaults.headers.common['Authorization'] = `Bearer ${response.data.token}`;
       setLoading(false);
       return response.data;
@@ -42,7 +59,14 @@ export const AuthProvider = ({ children }) => {
     try {
       const response = await api.post('/auth/signup', userData);
       setUser(response.data.userType);
+      // newToken = response.data.token
       localStorage.setItem('token', response.data.token);
+      if (response.data.token){
+        setToken(response.data.token)
+      }
+      else{
+        setToken(null)
+      }
       api.defaults.headers.common['Authorization'] = `Bearer ${response.data.token}`;
       setLoading(false);
       return response.data;
@@ -59,6 +83,12 @@ export const AuthProvider = ({ children }) => {
       const response = await api.post('/auth/google-signin', { credential });
       setUser(response.data.user);
       localStorage.setItem('token', response.data.token);
+      if (response.data.token){
+        setToken(response.data.token)
+      }
+      else{
+        setToken(null)
+      }
       api.defaults.headers.common['Authorization'] = `Bearer ${response.data.token}`;
       setLoading(false);
       return response.data;
@@ -71,18 +101,21 @@ export const AuthProvider = ({ children }) => {
   const logout = () => {
     setUser(null);
     localStorage.removeItem('token');
+    setToken(null)
     delete api.defaults.headers.common['Authorization'];
   };
 
   const checkAuthStatus = async () => {
     const token = localStorage.getItem('token');
     if (token) {
+      setToken(token)
       api.defaults.headers.common['Authorization'] = `Bearer ${token}`;
       try {
         const response = await api.get('/auth/me'); // Assuming you have a /me endpoint to get user data
         setUser(response.data.userType);
       } catch (err) {
         console.error('Error checking auth status:', err);
+        setToken(null)
         logout(); // If token is invalid or expired, log out the user
       }
     }
@@ -93,7 +126,7 @@ export const AuthProvider = ({ children }) => {
   }, []);
 
   return (
-    <AuthContext.Provider value={{ user, login, signup, googleSignIn, logout, loading, error }}>
+    <AuthContext.Provider value={{ user, login, signup, googleSignIn, logout, loading, error, token }}>
       {children}
     </AuthContext.Provider>
   );

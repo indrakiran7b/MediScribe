@@ -21,7 +21,7 @@ const NavItem = ({ to, children }) => {
 const Navbar = ({visibility}) => {
   const navigate = useNavigate();
   const [token, setToken] = useState(false);
-
+  
   useEffect(() => {
     // Check for token in localStorage or your auth state management
     const storedToken = localStorage.getItem('token');

@@ -11,7 +11,7 @@ import { useNavigate } from 'react-router-dom';
 
 const Login = () => {
   const navigate = useNavigate();
-  const { login, signup, googleSignIn, error } = useAuth();
+  const { login, signup, googleSignIn, error, token } = useAuth();
   const [isSignUp, setIsSignUp] = useState(false);
   const [role, setRole] = useState('patient');
   const [formData, setFormData] = useState({
