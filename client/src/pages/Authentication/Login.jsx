@@ -5,13 +5,12 @@ import { Button } from "@/components/ui/button";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Label } from "@/components/ui/label";
 import { User, UserPlus, Stethoscope, ShieldCheck } from 'lucide-react';
-import { GoogleLogin } from '@react-oauth/google';
-import { useAuth } from '../context/AuthContext';
+import { useAuth } from '../../context/AuthContext';
 import { useNavigate } from 'react-router-dom';
 
 const Login = () => {
   const navigate = useNavigate();
-  const { login, signup, googleSignIn, error, token } = useAuth();
+  const { login, signup,  error, token } = useAuth();
   const [isSignUp, setIsSignUp] = useState(false);
   const [role, setRole] = useState('patient');
   const [formData, setFormData] = useState({
@@ -25,26 +24,7 @@ const Login = () => {
     emrSystem: ''
   });
 
-  const handleGoogleSuccess = async (credentialResponse) => {
-    console.log('Google Sign-In Successful:', credentialResponse);
-    try {
-      const response = await googleSignIn(credentialResponse.credential);
-      console.log('Google Sign-In response:', response);
-      
-      // Handle successful sign-in
-      // This might include updating UI, redirecting, etc.
-      navigate('/home'); // or wherever you want to redirect after successful login
-    } catch (error) {
-      console.error('Error during Google Sign-In:', error);
-      console.error('Error details:', error.response?.data);
-      // Handle the error, maybe show a notification to the user
-    }
-  };
-
-  const handleGoogleError = () => {
-    console.error('Google Sign-In Failed');
-    // Handle the error, maybe show a notification to the user
-  };
+  
 
   const handleInputChange = (e) => {
     const { name, value } = e.target;
@@ -62,16 +42,23 @@ const Login = () => {
     e.preventDefault();
     const endpoint = getEndpoint(); // Make sure this function is defined
     const submitData = { ...formData, userType: role };
-    console.log(submitData);
+    // console.log(submitData);
 
     try {
       let response;
       if (isSignUp) {
         response = await signup(submitData);
+        if (response.status===201){
+          console.log('Thank you for signing up!');
+        }
+        
+        
       } else {
         response = await login(submitData);
       }
-      console.log(response)
+
+
+      console.log('frrr',response)
       if (response && response.token) {
         // Store the token in localStorage or in your auth context
         localStorage.setItem('token', response.token);
@@ -93,6 +80,10 @@ const Login = () => {
       }
     } catch (err) {
       console.error('Authentication error:', err.message);
+      if (error.response && error.response.status === 400) {
+        // Error: Display the error message returned by the server
+        console.log(error.response.data.message);
+      }
       // You can set a local error state here if you want to display it in the component
     }
   };
@@ -289,31 +280,21 @@ const Login = () => {
           </form>
         </CardContent>
         <CardFooter className="flex flex-col space-y-4 bg-gray-50 p-0">
-        {role === 'patient' && !isSignUp && (
-            <>
-              
-              <GoogleLogin
-                onSuccess={handleGoogleSuccess}
-                onError={handleGoogleError}
-                width="100%"
-                theme="outline"
-                size="large"
-                text="signin_with"
-                shape="rectangular"
-                logo_alignment="left"
-              />
-              <p className="text-sm text-slate-600 text-center">
-                {isSignUp ? 'Already have an account?' : "Don't have an account?"}
-                <Button
-                  variant="link"
-                  className="text-blue-600 hover:text-blue-800"
-                  onClick={() => setIsSignUp(!isSignUp)}
-                >
-                  {isSignUp ? 'Sign In' : 'Sign Up'}
-                </Button>
-              </p>
-            </>
-          )}
+        {role === 'patient' && (
+  <>
+    <p className="text-sm text-slate-600 text-center">
+      {isSignUp ? "Already have an account?" : "Don't have an account?"}
+      <Button
+        variant="link"
+        className="text-blue-600 hover:text-blue-800"
+        onClick={() => setIsSignUp(!isSignUp)}
+      >
+        {isSignUp ? 'Sign In' : 'Sign Up'}
+      </Button>
+    </p>
+  </>
+)}
+
         </CardFooter>
       </Card>
     </div>

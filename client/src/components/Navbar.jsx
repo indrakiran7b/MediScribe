@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { NavLink, useNavigate, useMatch, useResolvedPath } from 'react-router-dom';
 import { assets } from '../assets/assets_frontend/assets';
 import AccountMenu from './AccountMenu';
+import {useAuth} from '../context/AuthContext'
 
 const NavItem = ({ to, children }) => {
   const resolved = useResolvedPath(to);
@@ -18,15 +19,18 @@ const NavItem = ({ to, children }) => {
   );
 };
 
-const Navbar = ({visibility}) => {
+const Navbar = () => {
   const navigate = useNavigate();
-  const [token, setToken] = useState(false);
+  const {token , setToken} = useAuth();
+  // const [token, setToken] = useState(false);
   
   useEffect(() => {
-    // Check for token in localStorage or your auth state management
+    // Check for token in localStorage on component mount
     const storedToken = localStorage.getItem('token');
-    setToken(!!storedToken);
-  }, []);
+    if (storedToken) {
+      setToken(storedToken);  // Update token in context if found
+    }
+  }, [setToken]);
 
   return (
     <nav className="sticky top-0 bg-white z-10 shadow-sm">
@@ -44,7 +48,7 @@ const Navbar = ({visibility}) => {
           
           <div className="flex items-center">
             {token ? (
-              <AccountMenu setToken={setToken} />
+              <AccountMenu />
             ) : (
               <button
                 onClick={() => navigate('/auth')}

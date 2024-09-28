@@ -1,4 +1,4 @@
-import React, { createContext, useContext, useState, useEffect } from 'react';
+import React, { createContext, useContext, useState, useEffect, useMemo } from 'react';
 import axios from 'axios';
 
 const AuthContext = createContext();
@@ -58,6 +58,7 @@ export const AuthProvider = ({ children }) => {
     setError(null);
     try {
       const response = await api.post('/auth/signup', userData);
+      console.log('awaw',response)
       setUser(response.data.userType);
       // newToken = response.data.token
       localStorage.setItem('token', response.data.token);
@@ -76,36 +77,18 @@ export const AuthProvider = ({ children }) => {
       throw err;
     }
   };
-  const googleSignIn = async (credential) => {
-    setLoading(true);
-    setError(null);
-    try {
-      const response = await api.post('/auth/google-signin', { credential });
-      setUser(response.data.user);
-      localStorage.setItem('token', response.data.token);
-      if (response.data.token){
-        setToken(response.data.token)
-      }
-      else{
-        setToken(null)
-      }
-      api.defaults.headers.common['Authorization'] = `Bearer ${response.data.token}`;
-      setLoading(false);
-      return response.data;
-    } catch (err) {
-      setError(err.response?.data?.message || 'An error occurred during Google Sign-In');
-      setLoading(false);
-      throw err;
-    }
-  };
+  
   const logout = () => {
     setUser(null);
     localStorage.removeItem('token');
     setToken(null)
     delete api.defaults.headers.common['Authorization'];
+    console.log('LogOut is Completed')
   };
 
   const checkAuthStatus = async () => {
+    
+
     const token = localStorage.getItem('token');
     if (token) {
       setToken(token)
@@ -121,17 +104,14 @@ export const AuthProvider = ({ children }) => {
     }
   };
 
-  React.useEffect(() => {
-    checkAuthStatus();
-  }, []);
+  // useEffect(() =>  checkAuthStatus(), []);
 
   return (
-    <AuthContext.Provider value={{ user, login, signup, googleSignIn, logout, loading, error, token }}>
+    <AuthContext.Provider value={{ user, login, signup, logout, loading, error, token, setToken, checkAuthStatus }}>
       {children}
     </AuthContext.Provider>
   );
 };
 
 export const useAuth = () => useContext(AuthContext);
-
 

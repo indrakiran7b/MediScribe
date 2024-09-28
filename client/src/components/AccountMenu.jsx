@@ -13,8 +13,10 @@ import Settings from '@mui/icons-material/Settings';
 import Logout from '@mui/icons-material/Logout';
 import {assets} from '../assets/assets_frontend/assets'
 import { useNavigate } from 'react-router-dom';
+import { useAuth } from '../context/AuthContext';
 
-export default function AccountMenu({setToken}) {
+export default function AccountMenu() {
+  const {logout} = useAuth();
   const [anchorEl, setAnchorEl] = React.useState(null);
   const open = Boolean(anchorEl);
   const handleClick = (event) => {
@@ -23,6 +25,12 @@ export default function AccountMenu({setToken}) {
   const handleClose = () => {
     setAnchorEl(null);
   };
+  const handleLogout = () => {
+    
+    logout();
+    console.log('LogOut is Completed hello');
+  };
+
   const navigate = useNavigate()
   return (
     <React.Fragment>
@@ -94,7 +102,7 @@ export default function AccountMenu({setToken}) {
           </ListItemIcon>
           Settings
         </MenuItem> */}
-        <MenuItem onClick={()=>setToken(false)}>
+        <MenuItem onClick={()=>handleLogout()}>
           <ListItemIcon>
             <Logout fontSize="small" />
           </ListItemIcon>

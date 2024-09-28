@@ -18,6 +18,8 @@ import upload_icon from './upload_icon.png'
 import stripe_logo from './stripe_logo.png'
 import razorpay_logo from './razorpay_logo.png'
 import doctor1 from './doctor1.jpg'
+import bussiness3d from './business-3d-young-man-standing-with-laptop.png'
+import bussiness3d1 from './3d-business-black-doctor-standing-with-clipboard-and-writing.png'
 import doc1 from './doc1.png'
 import doc2 from './doc2.png'
 import doc3 from './doc3.png'
@@ -62,6 +64,8 @@ export const assets = {
     razorpay_logo,
     logo1,
     doctor1,
+    bussiness3d,
+    bussiness3d1,
 }
 
 export const specialityData = [
