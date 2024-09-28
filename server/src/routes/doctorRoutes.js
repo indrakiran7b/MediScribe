@@ -5,4 +5,5 @@ const { authenticateToken } = require('../middleware/auth');
 
 router.get('/specialty/:specialtyId', authenticateToken, doctorController.getDoctorsBySpecialty);
 
+
 module.exports = router;

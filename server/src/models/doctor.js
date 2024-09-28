@@ -11,7 +11,12 @@ const doctorSchema = new mongoose.Schema({
   specialty: { type: mongoose.Schema.Types.ObjectId, ref: 'Specialty', required: true },
   experience: { type: Number, required: true },
   available: { type: Boolean, default: true },
-  photoPath: { type: String }
+  photoPath: { type: String },
+  description: { type: String },
+  availableTimeSlots: [{
+    day: { type: String, enum: ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday'] },
+    slots: [{ type: String }]
+  }]
 });
 
 
@@ -28,4 +33,4 @@ doctorSchema.methods.comparePassword = async function(candidatePassword) {
   return bcrypt.compare(candidatePassword, this.password);
 };
 
-module.exports = mongoose.model('Doctor', doctorSchema);
+module.exports = mongoose.model('doctors1', doctorSchema);

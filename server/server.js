@@ -13,6 +13,9 @@ const doctorRoutes = require('./src/routes/doctorRoutes');
 
 const app = express();
 
+const doctorRoutes1 = require('./src/routes/appointmentRoute');
+
+
 // Middleware
 app.use(helmet());
 const corsOptions = {
@@ -46,6 +49,8 @@ app.use(passport.session());
 app.use('', authRoutes);
 app.use('/api/specialties', specialtyRoutes);
 app.use('/api/doctors', doctorRoutes);
+app.use('/api/appointments', doctorRoutes1);
+
 
 
 // Database connection

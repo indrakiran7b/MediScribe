@@ -6,23 +6,21 @@ exports.getDoctorsBySpecialty = async (req, res) => {
     const { specialtyId } = req.params;
     console.log(specialtyId)
     const doctors = await Doctor.find({ specialty: specialtyId });
-    const formattedDoctors = doctors.map(doctor => ({
-        _id: doctor._id,
-        user: {
-          firstName: doctor.firstName,
-          lastName: doctor.lastName,
-        },
-        specialty: doctor.specialty,  // Assuming specialty is populated correctly
-        experience: doctor.experience,
-        available: doctor.available,
-        photoPath: doctor.photoUrl,  // Assuming photoUrl field in your DB
-        education: doctor.education,
-        licenseNumber: doctor.licenseNumber,
-        consultationFee: doctor.consultationFee,
-        availableDays: doctor.availableDays,
-        email: doctor.email,
-        phoneNumber: doctor.phoneNumber,
-      }));
+    const formattedDoctors = doctors.map(({ 
+      _id, firstName, lastName, specialty, experience, available, 
+      photoPath, licenseNumber, availableTimeSlots, email , description,
+    }) => ({
+      _id,
+      user: { firstName, lastName },
+      specialty,
+      experience,
+      available,
+      photoPath, // Assuming photoUrl is now photoPath
+      licenseNumber,
+      availableDays: availableTimeSlots.map(slot => slot.day), // Extracting available days
+      email,
+      description
+    }));
     console.log(formattedDoctors)
     res.json(formattedDoctors);
   } catch (error) {
