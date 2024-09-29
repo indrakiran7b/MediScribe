@@ -27,7 +27,11 @@ const AppointmentSchema = new mongoose.Schema({
     type: String,
     enum: ['scheduled', 'completed', 'cancelled'],
     default: 'scheduled'
-  }
+  },
+  booked: {
+    type: Boolean,  // Correct type is 'Boolean' instead of 'bool'
+    default: true
+}
 }, { timestamps: true });
 
 module.exports = mongoose.model('Appointment', AppointmentSchema);
