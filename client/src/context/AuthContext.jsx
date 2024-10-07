@@ -1,10 +1,10 @@
-import React, { createContext, useContext, useState, useEffect, useMemo } from 'react';
+import  { createContext, useContext, useState, useEffect } from 'react';
 import axios from 'axios';
 
 const AuthContext = createContext();
 
 
-export const AuthProvider = ({ children }) => {
+export const AuthProvider = ({children}) => {
   const [user, setUser] = useState(null);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
@@ -37,6 +37,7 @@ export const AuthProvider = ({ children }) => {
       setUser(response.data.userType);
       // newToken = response.data.token
       localStorage.setItem('token', response.data.token);
+      localStorage.setItem('id1', response.data.patientID);
       if (response.data.token){
         setToken(response.data.token)
       }
@@ -53,34 +54,45 @@ export const AuthProvider = ({ children }) => {
     }
   };
 
-  const signup = async (userData) => {
-    setLoading(true);
-    setError(null);
-    try {
-      const response = await api.post('/auth/signup', userData);
-      console.log('awaw',response)
-      setUser(response.data.userType);
-      // newToken = response.data.token
-      localStorage.setItem('token', response.data.token);
-      if (response.data.token){
-        setToken(response.data.token)
+  
+    const signup = async (userData) => {
+      setLoading(true);
+      setError(null);
+      try {
+          const response = await api.post('/auth/signup', userData);
+          console.log('awaw', response);
+  
+          if (response.status === 400) {
+              console.log('Error 400:', response.data.message);
+              setError(response.data.message);
+              setLoading(false);
+              return;
+          }
+  
+          setUser(response.data.userType);
+          localStorage.setItem('token', response.data.token);
+          localStorage.setItem('id1', response.data.patientID);
+  
+          if (response.data.token) {
+              setToken(response.data.token);
+          } else {
+              setToken(null);
+          }
+  
+          api.defaults.headers.common['Authorization'] = `Bearer ${response.data.token}`;
+          setLoading(false);
+          return response.data;
+      } catch (err) {
+          setError(err.response?.data?.message || 'An error occurred during signup');
+          setLoading(false);
+          throw err;
       }
-      else{
-        setToken(null)
-      }
-      api.defaults.headers.common['Authorization'] = `Bearer ${response.data.token}`;
-      setLoading(false);
-      return response.data;
-    } catch (err) {
-      setError(err.response?.data?.message || 'An error occurred during signup');
-      setLoading(false);
-      throw err;
-    }
   };
   
   const logout = () => {
     setUser(null);
     localStorage.removeItem('token');
+    localStorage.removeItem('id1');
     setToken(null)
     delete api.defaults.headers.common['Authorization'];
     console.log('LogOut is Completed')

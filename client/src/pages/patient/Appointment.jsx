@@ -576,6 +576,7 @@ import { User, Briefcase, Mail, Phone } from 'lucide-react';
 import { Badge } from "@/components/ui/badge";
 import {assets} from '../../assets/assets_frontend/assets'
 import { isBefore, startOfDay } from "date-fns";
+// import patient from '../../../../server/src/models/patient';
 
 const AppointmentBookingPage = () => {
   const { doctorId } = useParams();
@@ -599,6 +600,7 @@ const AppointmentBookingPage = () => {
         console.error('Error fetching doctor info:', error);
       } finally {
         setLoading(false);
+
       }
     };
 
@@ -618,22 +620,42 @@ const AppointmentBookingPage = () => {
     if (selectedDate && selectedTime && description) {
       try {
         const response = await axios.post('http://localhost:5000/api/appointments/book', {
-          doctorId,
+          doctorId: doctorId,
+          patientId: localStorage.getItem('id1'),
           date: format(selectedDate, 'yyyy-MM-dd'),
           timeSlot: selectedTime,
-          description
+          description: description
         }, {
           headers: { Authorization: `Bearer ${localStorage.getItem('token')}` }
         });
-        setBookingStatus('success');
+  
+        // Check the response and update booking status accordingly
+        console.log(response);
+        if (response.status === 201) {
+          setBookingStatus('success');
+          console.log(response.data.message); // "Appointment booked successfully!"
+        } else if (response.status === 200) {
+          setBookingStatus('error');
+          console.error(response.data.message); // "This time slot is already booked."
+        }
+  
       } catch (error) {
-        console.error('Error booking appointment:', error);
-        setBookingStatus('error');
+        console.error('Error booking appointment:', error.message);
+        
+        // Handle the error if the request fails due to a server error or other issues
+        if (error.response && error.response.status === 500) {
+          setBookingStatus('serverError');
+          console.error(error.response.data.message); // "Server error"
+        } else {
+          setBookingStatus('error');
+        }
       }
     } else {
       setBookingStatus('error');
+      console.warn('Missing required fields');
     }
   };
+  
 
   const getAvailableTimeSlots = () => {
     if (!doctor || !doctor.availableTimeSlots || !selectedDate) return [];

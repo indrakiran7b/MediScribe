@@ -62,6 +62,7 @@ const Login = () => {
       if (response && response.token) {
         // Store the token in localStorage or in your auth context
         localStorage.setItem('token', response.token);
+        localStorage.setItem('id1', response.patientID);
         switch (role) {
           case 'patient':
             navigate('/');
