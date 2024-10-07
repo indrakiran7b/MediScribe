@@ -1,3 +1,5 @@
+const mongoose = require('mongoose');
+
 const doctorNotificationSchema = new mongoose.Schema({
     doctorId: {
       type: mongoose.Schema.Types.ObjectId,
@@ -12,11 +14,11 @@ const doctorNotificationSchema = new mongoose.Schema({
       type: Boolean,
       default: false
     },
-    createdAt: {
+    BookedAt: {
       type: Date,
       default: Date.now
     }
   });
   
-  const DoctorNotification = mongoose.model('DoctorNotification', doctorNotificationSchema);
+module.exports= mongoose.model('DoctorNotification', doctorNotificationSchema);
   

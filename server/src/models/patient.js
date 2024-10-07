@@ -8,7 +8,7 @@ const patientSchema = new mongoose.Schema({
   lastName: { type: String, required: true },
   dob: { type: Date, required: true },
   phoneNumber: { type: String, required: true },
-  ehrSystem: { type: String, required: true },
+  emrSystem: { type: String, required: true },
   gender: { type: String, required: true },
   googleId: { type: String}
 });

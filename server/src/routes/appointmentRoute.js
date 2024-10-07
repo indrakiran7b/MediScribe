@@ -50,6 +50,6 @@ router.get('/:id', async (req, res) => {
 
 
 router.post('/book', authenticateToken, bookAppointment);
-router.get('/:doctorId', authenticateToken, getDoctorAppointments);
+// router.get('/:doctorId', authenticateToken, getDoctorAppointments);
 
 module.exports = router;

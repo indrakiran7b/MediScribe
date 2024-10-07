@@ -54,7 +54,7 @@ app.use('/api/appointments', doctorRoutes1);
 
 
 // Database connection
-mongoose.connect(config.mongoURI, { useNewUrlParser: true, useUnifiedTopology: true })
+mongoose.connect(config.mongoURI)
   .then(() => console.log('Connected to MongoDB'))
   .catch(err => console.error('MongoDB connection error:', err));
 

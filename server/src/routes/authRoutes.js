@@ -13,8 +13,9 @@ router.post('/auth/signup', async (req, res) => {
   try {
     console.log(req.body)
     const { email, password, firstName, lastName, dob, phoneNumber, emrSystem, gender } = req.body;
+    console.log('hi')
     const existingPatient = await Patient.findOne({ email });
-    console.log(existingPatient)
+    console.log('dfd',existingPatient)
     if (existingPatient) {
       return res.status(400).json({ message: 'Email already in use' });
     }
@@ -22,7 +23,7 @@ router.post('/auth/signup', async (req, res) => {
     
     const formattedDob = new Date(`${dob['year']}-${dob['month']}-${dob['day']}`);
     console.log(formattedDob)
-    const newPatient = await Patient({
+    const newPatient = new Patient({
       email,
       password,
       firstName,
@@ -32,15 +33,23 @@ router.post('/auth/signup', async (req, res) => {
       emrSystem,
       gender
     });
-    await newPatient.save();
+    console.log('nkjnnj1')
+    await newPatient.save().catch(error => {
+      console.error('Error saving new patient:', error);
+      throw error;
+    });
+    console.log('nkjnnj2')
     const token = jwt.sign({ id: newPatient._id, userType: 'patient' }, config.jwtSecret, { expiresIn: '1d' });
-
+    console.log('nkjnnj')
+    patientID1 = newPatient._id;
     // Respond with the token, userType, and success message
     res.status(201).json({
       message: 'Patient account created successfully',
       token:token,
-      userType: 'patient'
+      userType: 'patient',
+      patientID : patientID1
     });
+    console.log('nkjnnj')
     
   } catch (error) {
     res.status(500).json({ message: 'Error creating patient account', error: error.message });
@@ -71,7 +80,7 @@ router.post('/auth/login', async (req, res) => {
   const user = await User.findOne({ email });
   console.log('hi',User, user);
   try {
-    const user = await User.findOne({ email });
+    
     if (!user) {
       return res.status(401).json({ message: 'Invalid email or password' });
     }
@@ -83,7 +92,8 @@ router.post('/auth/login', async (req, res) => {
     console.log('password is matched')
     const token = jwt.sign({ id: user._id, userType }, config.jwtSecret, { expiresIn: '1d' });
     console.log('SignIn is successful');
-    res.json({ token, userType });
+    patientID1 = user._id
+    res.json({ token:token, userType:userType, patientID:patientID1});
   } catch (error) {
     res.status(500).json({ message: 'Error signing in', error: error.message });
     console.log('SignIn is error');
