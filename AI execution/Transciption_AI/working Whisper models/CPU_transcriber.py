@@ -6,7 +6,7 @@ import queue
 import time
 
 # Initialize Whisper model
-model = whisper.load_model("base")
+model = whisper.load_model("medium")
 
 # Audio recording parameters
 CHUNK = 1024
