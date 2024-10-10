@@ -24,7 +24,7 @@ exports.bookAppointment = async (req, res) => {
       console.log(`Appointment1`)
       console.log('Appointment')
       return res.status(200).json({ message: 'This time slot is already booked.' });
-      console.log('nvjf');
+      
     }
 
     

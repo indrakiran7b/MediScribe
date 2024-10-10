@@ -576,7 +576,13 @@ import { User, Briefcase, Mail, Phone } from 'lucide-react';
 import { Badge } from "@/components/ui/badge";
 import {assets} from '../../assets/assets_frontend/assets'
 import { isBefore, startOfDay } from "date-fns";
+// import { useToast } from '@chakra-ui/react'
 // import patient from '../../../../server/src/models/patient';
+import { useToast } from "@/hooks/use-toast"
+import { Toaster } from "@/components/ui/toaster"
+import { Check, AlertTriangle } from "lucide-react"
+
+
 
 const AppointmentBookingPage = () => {
   const { doctorId } = useParams();
@@ -587,6 +593,10 @@ const AppointmentBookingPage = () => {
   const [bookingStatus, setBookingStatus] = useState(null);
   const [loading, setLoading] = useState(true);
   const today = startOfDay(new Date());
+  const { toast } = useToast()
+  
+
+  // const statuses = ['success', 'error', 'warning', 'info']
 
   useEffect(() => {
     const fetchDoctorInfo = async () => {
@@ -634,9 +644,48 @@ const AppointmentBookingPage = () => {
         if (response.status === 201) {
           setBookingStatus('success');
           console.log(response.data.message); // "Appointment booked successfully!"
+          // toast({
+          //   title: `Appointment Created Sucessfully`,
+          //   // description:"Appointment Created Sucessfully",
+          //   status: 'success',
+          //   isClosable: true,
+          // })
+          toast({
+            title: "Appointment Successfully Created",
+            description: "Friday, February 10, 2023 at 5:57 PM",
+            variant: "default",
+            position: "bottom", // Position at the bottom
+            className: "bg-green-200 border-green-400", // Darker green
+            duration: 5000,
+            action: <Check className="h-6 w-6 text-green-600" />, // Increased icon size and darker color
+            style: {
+              width: '300px', // Increased width
+              height: '80px', // Increased height
+            },
+          });
+          console.log('hi')
         } else if (response.status === 200) {
           setBookingStatus('error');
           console.error(response.data.message); // "This time slot is already booked."
+          // toast({
+          //   title: `Appointment Already Booked`,
+          //   // description:"Appointment Created Sucessfully",
+          //   status: 'warning',
+          //   isClosable: true,
+          // })
+          toast({
+            title: "Appointment Already Booked",
+            description: "Friday, February 10, 2023 at 5:57 PM",
+            variant: "default",
+            position: "bottom", // Position at the bottom
+            className: "bg-yellow-200 border-yellow-400", // Darker yellow
+            duration: 5000,
+            action: <AlertTriangle className="h-6 w-6 text-yellow-600" />, // Increased icon size and darker color
+            style: {
+              width: '300px', // Increased width
+              height: '80px', // Increased height
+            },
+          });
         }
   
       } catch (error) {
@@ -697,6 +746,7 @@ const AppointmentBookingPage = () => {
 
   return (
     <div className="container mx-auto p-4">
+      <Toaster />
       <Card className="overflow-hidden">
       <CardContent className="p-6">
         <div className="flex flex-col md:flex-row gap-6">

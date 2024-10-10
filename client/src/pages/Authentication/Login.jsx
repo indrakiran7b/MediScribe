@@ -7,12 +7,14 @@ import { Label } from "@/components/ui/label";
 import { User, UserPlus, Stethoscope, ShieldCheck } from 'lucide-react';
 import { useAuth } from '../../context/AuthContext';
 import { useNavigate } from 'react-router-dom';
+import { useToast } from '@chakra-ui/react'
 
 const Login = () => {
   const navigate = useNavigate();
   const { login, signup,  error, token } = useAuth();
   const [isSignUp, setIsSignUp] = useState(false);
   const [role, setRole] = useState('patient');
+  const toast = useToast()
   const [formData, setFormData] = useState({
     email: '',
     password: '',
@@ -23,11 +25,27 @@ const Login = () => {
     phoneNumber: '',
     emrSystem: ''
   });
-
+  const [formErrors, setFormErrors] = useState(false);
   
 
   const handleInputChange = (e) => {
     const { name, value } = e.target;
+    let errors = {};
+
+  if (name === 'email') {
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    if (!emailRegex.test(value)) {
+      errors.email = 'Please enter a valid email address';
+    }
+  }
+
+  if (name === 'password' && value.length < 6) {
+    errors.password = 'Password must be at least 6 characters long';
+  }
+    setFormErrors(prev => ({
+      ...prev,
+      [name]: errors[name] || '',
+    }));
     setFormData(prev => ({ ...prev, [name]: value }));
   };
 
@@ -63,6 +81,14 @@ const Login = () => {
         // Store the token in localStorage or in your auth context
         localStorage.setItem('token', response.token);
         localStorage.setItem('id1', response.patientID);
+        
+        toast({
+            title: 'Account created.',
+            description: "We've created your account for you.",
+            status: 'success',
+            duration: 9000,
+            isClosable: true,
+          })
         switch (role) {
           case 'patient':
             navigate('/');
@@ -122,6 +148,32 @@ const Login = () => {
     }
   };
 
+  const handlePhoneNumberChange = (e) => {
+    const { value } = e.target;
+  
+    // Allow only numeric values and restrict to 10 digits
+    if (/^\d{0,10}$/.test(value)) {
+      setFormData((prev) => ({
+        ...prev,
+        phoneNumber: value,
+      }));
+  
+      // If the length is less than 10 digits, show an error
+      if (value.length !== 10 && value.length > 0) {
+        setFormErrors((prev) => ({
+          ...prev,
+          phoneNumber: 'Phone number must be exactly 10 digits.',
+        }));
+      } else {
+        setFormErrors((prev) => ({
+          ...prev,
+          phoneNumber: '',
+        }));
+      }
+    }
+  };
+  
+
   return (
     <div className='mt-20 flex gap-3 items-center justify-center min-h-screen  from-blue-100 to-indigo-100'>
       
@@ -160,6 +212,9 @@ const Login = () => {
                 Admin
               </Button>
             </div>
+            <div>
+              
+            </div>
             <div className="space-y-2">
               <Label htmlFor="email">Email</Label>
               <Input
@@ -172,6 +227,7 @@ const Login = () => {
                 required
                 className="w-full"
               />
+              {formErrors.email && <p className="text-red-500">{formErrors.email}</p>}
             </div>
             <div className="space-y-2">
               <Label htmlFor="password">Password</Label>
@@ -185,6 +241,7 @@ const Login = () => {
                 required
                 className="w-full"
               />
+              {formErrors.password && <p className="text-red-500">{formErrors.password}</p>}
             </div>
             {isSignUp && role === 'patient' && (
               <>
@@ -213,31 +270,60 @@ const Login = () => {
                   </div>
                 </div>
                 <div className="space-y-2">
-                  <Label>Date of Birth</Label>
+                  <Label htmlFor="dob">Date of Birth</Label>
+                  
                   <div className="grid grid-cols-3 gap-2">
-                    <Input
-                      placeholder="DD"
-                      value={formData.dob.day}
-                      onChange={(e) => handleDobChange('day', e.target.value)}
-                      required
-                    />
-                    <Input
-                      placeholder="MM"
-                      value={formData.dob.month}
-                      onChange={(e) => handleDobChange('month', e.target.value)}
-                      required
-                    />
-                    <Input
-                      placeholder="YYYY"
-                      value={formData.dob.year}
-                      onChange={(e) => handleDobChange('year', e.target.value)}
-                      required
-                    />
+                    {/* Day Dropdown */}
+                    <Select name="day" onValueChange={(value) => handleDobChange('day', value)} required>
+                      <SelectTrigger>
+                        <SelectValue placeholder="DD" />
+                      </SelectTrigger>
+                      <SelectContent>
+                        {Array.from({ length: 31 }, (_, i) => (
+                          <SelectItem key={i + 1} value={String(i + 1).padStart(2, '0')}>
+                            {String(i + 1).padStart(2, '0')}
+                          </SelectItem>
+                        ))}
+                      </SelectContent>
+                    </Select>
+
+                    {/* Month Dropdown */}
+                    <Select name="month" onValueChange={(value) => handleDobChange('month', value)} required>
+                      <SelectTrigger>
+                        <SelectValue placeholder="MM" />
+                      </SelectTrigger>
+                      <SelectContent>
+                        {Array.from({ length: 12 }, (_, i) => (
+                          <SelectItem key={i + 1} value={String(i + 1).padStart(2, '0')}>
+                            {String(i + 1).padStart(2, '0')}
+                          </SelectItem>
+                        ))}
+                      </SelectContent>
+                    </Select>
+
+                    {/* Year Dropdown */}
+                    <Select name="year" onValueChange={(value) => handleDobChange('year', value)} required>
+                      <SelectTrigger>
+                        <SelectValue placeholder="YYYY" />
+                      </SelectTrigger>
+                      <SelectContent>
+                        {Array.from({ length: new Date().getFullYear() - 1960 + 1 }, (_, i) => {
+                          const year = 1960 + i;
+                          return (
+                            <SelectItem key={year} value={String(year)}>
+                              {year}
+                            </SelectItem>
+                          );
+                        })}
+                      </SelectContent>
+                    </Select>
                   </div>
                 </div>
+
+
                 <div className="space-y-2">
                   <Label htmlFor="gender">Gender</Label>
-                  <Select name="gender" onValueChange={(value) => setFormData(prev => ({ ...prev, gender: value }))}>
+                  <Select name="gender" onValueChange={(value) => setFormData(prev => ({ ...prev, gender: value }))} required>
                     <SelectTrigger>
                       <SelectValue placeholder="Select gender" />
                     </SelectTrigger>
@@ -256,13 +342,14 @@ const Login = () => {
                     type="tel"
                     placeholder="Enter phone number"
                     value={formData.phoneNumber}
-                    onChange={handleInputChange}
+                    onChange={handlePhoneNumberChange}
                     required
                   />
+                  {formErrors.phoneNumber && <p className="text-red-500">{formErrors.phoneNumber}</p>}
                 </div>
                 <div className="space-y-2">
                   <Label htmlFor="emrSystem">EMR System</Label>
-                  <Select name="emrSystem" onValueChange={(value) => setFormData(prev => ({ ...prev, emrSystem: value }))}>
+                  <Select name="emrSystem" onValueChange={(value) => setFormData(prev => ({ ...prev, emrSystem: value }))} required>
                     <SelectTrigger>
                       <SelectValue placeholder="Select EMR system" />
                     </SelectTrigger>

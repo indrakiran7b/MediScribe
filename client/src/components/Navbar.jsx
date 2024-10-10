@@ -19,6 +19,7 @@ const NavItem = ({ to, children }) => {
   );
 };
 
+
 const Navbar = () => {
   const navigate = useNavigate();
   const {token , setToken} = useAuth();
