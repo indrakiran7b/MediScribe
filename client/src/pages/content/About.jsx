@@ -78,140 +78,166 @@
 
 // export default OTPVerification;
 
+
+
+
+
 import React, { useState, useEffect } from 'react';
-import { format, addDays, isSameDay } from 'date-fns';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { Button } from '@/components/ui/button';
-import { Input } from '@/components/ui/input';
-import { Textarea } from '@/components/ui/textarea';
+import { Calendar as CalendarIcon, User, Book, X, Play } from 'lucide-react';
 import { Calendar } from '@/components/ui/calendar';
-import { Toast as toast } from '@/components/ui/toast';
+import { useNavigate } from 'react-router-dom';
+import axios from 'axios';
+import {
+  Card,
+  CardContent,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card";
+import { Button } from "@/components/ui/button";
 
-const timeSlots = [
-  '09:00', '10:00', '11:00', '12:00', '14:00', '15:00', '16:00', '17:00'
-];
-
-const doctorDetails = {
-  name: "Dr. Jane Smith",
-  specialty: "Cardiology",
-  experience: "15 years",
-  rating: 4.8
-};
-
-export default function AppointmentBookingPage() {
-  const [selectedDate, setSelectedDate] = useState(new Date());
-  const [selectedTimeSlot, setSelectedTimeSlot] = useState('');
-  const [description, setDescription] = useState('');
-  const [bookedSlots, setBookedSlots] = useState({});
+const DoctorDashboard = () => {
+  const [stats, setStats] = useState({
+    totalDoctors: 0,
+    totalAppointments: 0,
+    totalPatients: 0
+  });
+  const [appointments, setAppointments] = useState([]);
+  const [date, setDate] = useState(new Date());
+  const [isLoading, setIsLoading] = useState(true);
+  const navigate = useNavigate();
 
   useEffect(() => {
-    // Simulating fetching booked slots from an API
-    const fetchBookedSlots = async () => {
-      // In a real application, this would be an API call
-      const mockBookedSlots = {
-        [format(new Date(), 'yyyy-MM-dd')]: ['10:00', '14:00'],
-        [format(addDays(new Date(), 1), 'yyyy-MM-dd')]: ['11:00', '15:00'],
-      };
-      setBookedSlots(mockBookedSlots);
-    };
-    fetchBookedSlots();
+    fetchDashboardData();
   }, []);
 
-  const handleDateChange = (date) => {
-    setSelectedDate(date);
-    setSelectedTimeSlot('');
-  };
+  const fetchDashboardData = async () => {
+    setIsLoading(true);
+    try {
+      // Replace these URLs with your actual backend endpoints
+      const [statsResponse, appointmentsResponse] = await Promise.all([
+        axios.get('/api/dashboard/stats'),
+        axios.get('/api/appointments')
+      ]);
 
-  const handleTimeSlotSelect = (slot) => {
-    setSelectedTimeSlot(slot);
-  };
-
-  const handleBookAppointment = () => {
-    if (!selectedDate || !selectedTimeSlot || !description) {
-      toast({
-        title: "Booking Failed",
-        description: "Please fill in all fields.",
-        variant: "destructive",
-      });
-      return;
+      setStats(statsResponse.data);
+      setAppointments(appointmentsResponse.data);
+    } catch (error) {
+      console.error("Error fetching dashboard data:", error);
+      // Handle error appropriately - maybe show a toast notification
+    } finally {
+      setIsLoading(false);
     }
-
-    // Here you would typically make an API call to book the appointment
-    console.log('Booking appointment:', {
-      date: format(selectedDate, 'yyyy-MM-dd'),
-      timeSlot: selectedTimeSlot,
-      description
-    });
-
-    toast({
-      title: "Appointment Booked",
-      description: "Your appointment has been successfully booked.",
-    });
-
-    // Reset form
-    setSelectedTimeSlot('');
-    setDescription('');
   };
 
-  const isSlotBooked = (date, slot) => {
-    const dateStr = format(date, 'yyyy-MM-dd');
-    return bookedSlots[dateStr] && bookedSlots[dateStr].includes(slot);
+  const handleStartAppointment = (appointmentId) => {
+    navigate(`/appointment/${appointmentId}`);
   };
+
+  const handleCancelAppointment = async (appointmentId) => {
+    try {
+      await axios.post(`/api/appointments/${appointmentId}/cancel`);
+      // Refresh appointments after cancellation
+      const response = await axios.get('/api/appointments');
+      setAppointments(response.data);
+      // Maybe show a success toast
+    } catch (error) {
+      console.error("Error canceling appointment:", error);
+      // Handle error - show error toast
+    }
+  };
+
+  const StatCard = ({ icon: Icon, value, label }) => (
+    <Card>
+      <CardContent className="flex items-center p-6">
+        <div className="rounded-full bg-blue-100 p-3 mr-4">
+          <Icon className="h-6 w-6 text-blue-500" />
+        </div>
+        <div>
+          <CardTitle className="text-2xl font-bold">{value}</CardTitle>
+          <p className="text-gray-500">{label}</p>
+        </div>
+      </CardContent>
+    </Card>
+  );
+
+  const AppointmentList = () => (
+    <Card className="mt-8">
+      <CardHeader>
+        <CardTitle className="text-xl font-semibold flex items-center">
+          <Book className="h-5 w-5 mr-2 text-blue-500" />
+          Latest Appointments
+        </CardTitle>
+      </CardHeader>
+      <CardContent>
+        <div className="space-y-4">
+          {appointments.map((appointment) => (
+            <Card key={appointment.id} className="p-4">
+              <div className="flex items-center justify-between">
+                <div className="flex items-center space-x-4">
+                  <img 
+                    src={appointment.patientPhoto} 
+                    alt={appointment.patientName}
+                    className="w-12 h-12 rounded-full"
+                  />
+                  <div>
+                    <h3 className="font-semibold">{appointment.patientName}</h3>
+                    <p className="text-sm text-gray-500">{appointment.date} at {appointment.time}</p>
+                    <p className="text-sm text-gray-600 mt-1">{appointment.description}</p>
+                  </div>
+                </div>
+                <div className="flex space-x-2">
+                  <Button 
+                    onClick={() => handleStartAppointment(appointment.id)}
+                    className="bg-green-500 hover:bg-green-600 text-white"
+                  >
+                    <Play className="h-4 w-4 mr-1" /> Start
+                  </Button>
+                  <Button 
+                    onClick={() => handleCancelAppointment(appointment.id)}
+                    variant="destructive"
+                  >
+                    <X className="h-4 w-4 mr-1" /> Cancel
+                  </Button>
+                </div>
+              </div>
+            </Card>
+          ))}
+        </div>
+      </CardContent>
+    </Card>
+  );
+
+  if (isLoading) {
+    return <div>Loading...</div>; // Consider using a proper loading spinner
+  }
 
   return (
-    <div className="container mx-auto p-4">
-      <Card className="mb-6">
-        <CardHeader>
-          <CardTitle>{doctorDetails.name}</CardTitle>
-        </CardHeader>
-        <CardContent>
-          <p>Specialty: {doctorDetails.specialty}</p>
-          <p>Experience: {doctorDetails.experience}</p>
-          <p>Rating: {doctorDetails.rating}/5</p>
-        </CardContent>
-      </Card>
-
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-        <div>
-          <h2 className="text-2xl font-bold mb-4">Select Date</h2>
-          <Calendar
-            mode="single"
-            selected={selectedDate}
-            onSelect={handleDateChange}
-            fromDate={new Date()}
-            toDate={addDays(new Date(), 29)}
-          />
-        </div>
-
-        <div>
-          <h2 className="text-2xl font-bold mb-4">Select Time</h2>
-          <div className="grid grid-cols-2 sm:grid-cols-4 gap-2">
-            {timeSlots.map((slot) => (
-              <Button
-                key={slot}
-                onClick={() => handleTimeSlotSelect(slot)}
-                disabled={isSlotBooked(selectedDate, slot)}
-                variant={selectedTimeSlot === slot ? "default" : "outline"}
-              >
-                {slot}
-              </Button>
-            ))}
-          </div>
-        </div>
+    <div className="p-8">
+      <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
+        <StatCard icon={User} value={stats.totalDoctors} label="Doctors" />
+        <StatCard icon={CalendarIcon} value={stats.totalAppointments} label="Appointments" />
+        <StatCard icon={User} value={stats.totalPatients} label="Patients" />
       </div>
 
-      <div className="mt-6">
-        <h2 className="text-2xl font-bold mb-4">Appointment Details</h2>
-        <Textarea
-          placeholder="Describe your reason for visit"
-          value={description}
-          onChange={(e) => setDescription(e.target.value)}
-          className="mb-4"
-        />
-        <Button onClick={handleBookAppointment} className="w-full">
-          Book Appointment
-        </Button>
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+        <AppointmentList />
+        
+        <Card>
+          <CardHeader>
+            <CardTitle className="text-xl font-semibold">Calendar</CardTitle>
+          </CardHeader>
+          <CardContent>
+            <Calendar
+              mode="single"
+              selected={date}
+              onSelect={setDate}
+              className="rounded-md border"
+            />
+          </CardContent>
+        </Card>
       </div>
     </div>
   );
-}
+};
+
+export default DoctorDashboard;

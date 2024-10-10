@@ -21,6 +21,7 @@ function App() {
         <div className='mx-4 sm:mx-[10%]'>
           <Routes>
             <Route path='/auth' element={<Login />} />
+            {/* <Route path='/doctor-page' element={<DoctorHome />}/> */}
             <Route path="/" element={<Layout />}>
               <Route index element={<Home />} />
               <Route path='/about' element={<About />} />
