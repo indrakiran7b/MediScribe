@@ -10,7 +10,7 @@ const patientSchema = new mongoose.Schema({
   phoneNumber: { type: String, required: true },
   emrSystem: { type: String, required: true },
   gender: { type: String, required: true },
-  googleId: { type: String}
+  photourl:{type:String},
 });
 
 patientSchema.pre('save', async function(next) {

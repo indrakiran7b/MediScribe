@@ -15,6 +15,7 @@ const app = express();
 
 const doctorRoutes1 = require('./src/routes/appointmentRoute');
 
+const appointmentRoutes = require('./src/routes/doctorPageRoutes');
 
 // Middleware
 app.use(helmet());
@@ -50,7 +51,7 @@ app.use('', authRoutes);
 app.use('/api/specialties', specialtyRoutes);
 app.use('/api/doctors', doctorRoutes);
 app.use('/api/appointments', doctorRoutes1);
-
+app.use('/api',appointmentRoutes);
 
 
 // Database connection
