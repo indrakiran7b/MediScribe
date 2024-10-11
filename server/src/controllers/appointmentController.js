@@ -103,13 +103,14 @@ exports.getDoctorAvailability = async (req, res) => {
 
 exports.getStats = async (req, res) => {
   try {
-    console.log(req)
-    const { doctorId, userType } = req.query;
+    // console.log(req)
+    console.log(req.query)
+    const { doctorId} = req.query;
     const today = moment().startOf('day');
     const endOfToday = moment().endOf('day');
     const startOfMonth = moment().startOf('month');
 
-    const query = userType === 'doctor' ? { doctorId } : {};
+    const query = { doctorId };
 
     const totalAppointments = await Appointment.countDocuments(query);
     const todayAppointments = await Appointment.countDocuments({
@@ -145,16 +146,17 @@ exports.getStats = async (req, res) => {
 
 exports.getRecentAppointments = async (req, res) => {
   try {
-    const { doctorId } = req.body;
+    // concole.log('hi',req.body)
+    const { doctorId } = req.query;
     const appointments = await Appointment.find({ doctorId:doctorId })
       .sort({ date: -1, timeSlot: -1 })
       .limit(5)
 
     const formattedAppointments = await Promise.all(appointments.map(async (apt) => {
       const patient = await Patient.findById(apt.patientId);
-      console.log(patient)
+      // console.log(patient)
       return {
-        patientName: patient.firstName + " " + patient.lastName,
+        patientName: patient.firstName + " "  + patient.lastName,
         patientId: patient._id,
         photo: patient.photourl,
         description: apt.description,

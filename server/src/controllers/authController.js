@@ -39,6 +39,7 @@ exports.signup = async (req, res) => {
 exports.signin = async (req, res) => {
   try {
     const { email, password } = req.body;
+    console.log(req.body)
 
     const user = await User.findOne({ email });
     if (!user) {
@@ -59,31 +60,3 @@ exports.signin = async (req, res) => {
   }
 };
 
-exports.googleSignIn = async (req, res) => {
-    try {
-      const { token } = req.body;
-      const ticket = await client.verifyIdToken({
-        idToken: token,
-        audience: process.env.GOOGLE_CLIENT_ID,
-      });
-      const { email } = ticket.getPayload();
-  
-      let user = await User.findOne({ email });
-  
-      if (!user) {
-        // If user doesn't exist, return a "user not found" message
-        return res.status(404).json({ message: 'User not found' });
-      }
-  
-      // If user exists, update the googleId
-      user.googleId = ticket.getUserId();
-      await user.save();
-  
-      const jwtToken = jwt.sign({ userId: user._id, role: user.role }, process.env.JWT_SECRET, { expiresIn: '1d' });
-  
-      res.json({ token: jwtToken, userId: user._id, role: user.role });
-    } catch (error) {
-      console.error('Google Sign-In error:', error);
-      res.status(500).json({ message: 'Error during Google Sign-In', error: error.message });
-    }
-  };
