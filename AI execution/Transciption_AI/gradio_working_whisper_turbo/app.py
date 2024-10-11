@@ -12,7 +12,7 @@ import os
 MODEL_NAME = "ylacombe/whisper-large-v3-turbo"
 BATCH_SIZE = 8
 FILE_LIMIT_MB = 1000
-YT_LENGTH_LIMIT_S = 3600  # limit to 1 hour YouTube files
+YT_LENGTH_LIMIT_S = 3600  
 
 device = 0 if torch.cuda.is_available() else "cpu"
 
