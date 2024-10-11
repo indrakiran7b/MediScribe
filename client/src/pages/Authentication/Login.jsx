@@ -73,11 +73,15 @@ const Login = () => {
         
       } else {
         response = await login(submitData);
+        console.log(response)
+        if (response.status ===200){
+            console.log("Please Use correct credentials")
+        }
       }
 
 
       console.log('frrr',response)
-      if (response && response.token) {
+      if (response) {
         // Store the token in localStorage or in your auth context
         localStorage.setItem('token', response.token);
         localStorage.setItem('id1', response.patientID);
@@ -94,6 +98,7 @@ const Login = () => {
             navigate('/');
             break;
           case 'doctor':
+            console.log('hi')
             navigate('/doctor-page');
             break;
           case 'admin':

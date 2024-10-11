@@ -13,6 +13,7 @@ import AppointmentBookingPage from './pages/patient/Appointment';
 import Layout from './pages/content/Layout';
 import MedicalHistory from './pages/patient/MedicalHistory';
 import { AuthProvider } from './context/AuthContext';
+import DoctorDashboard from './pages/doctor/DoctorDashboard';
 
 function App() {
   return (
@@ -21,7 +22,7 @@ function App() {
         <div className='mx-4 sm:mx-[10%]'>
           <Routes>
             <Route path='/auth' element={<Login />} />
-            {/* <Route path='/doctor-page' element={<DoctorHome />}/> */}
+            <Route path='/doctor-page' element={<DoctorDashboard />}/>
             <Route path="/" element={<Layout />}>
               <Route index element={<Home />} />
               <Route path='/about' element={<About />} />
@@ -32,6 +33,7 @@ function App() {
               <Route path='/my-profile' element={<MyProfile />} />
               <Route path='/my-appointments' element={<MyAppointments />} />
               <Route path='/appointments/:doctorId' element={<AppointmentBookingPage />} />
+              
             </Route>
             <Route path='*' element={<Login />} />
           </Routes>
