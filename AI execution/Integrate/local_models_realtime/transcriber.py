@@ -1,95 +1,97 @@
-#import spaces
-import torch
-
-import json
-import os
-from datetime import datetime
-
 import gradio as gr
+import numpy as np
+import torch
+import queue
+import threading
+import time
+import sounddevice as sd
 from transformers import pipeline
-from transformers.pipelines.audio_utils import ffmpeg_read
 
-import tempfile
-import os
+# Load custom Whisper model
+transcriber = pipeline("automatic-speech-recognition", model="ylacombe/whisper-large-v3-turbo", device="cuda:0")
 
-MODEL_NAME = "ylacombe/whisper-large-v3-turbo"
-BATCH_SIZE = 8
-FILE_LIMIT_MB = 1000
-YT_LENGTH_LIMIT_S = 3600  
+# Global variables
+audio_queue = queue.Queue()
+is_recording = False
+transcription = []
 
-device = 0 if torch.cuda.is_available() else "cpu"
+# Audio recording parameters
+samplerate = 16000
+channels = 1
+dtype = 'float32'
 
-pipe = pipeline(
-    task="automatic-speech-recognition",
-    model=MODEL_NAME,
-    chunk_length_s=30,
-    device=device,
-)
+def audio_callback(indata, frames, time, status):
+    """This is called (from a separate thread) for each audio block."""
+    if is_recording:
+        audio_queue.put(indata.copy())
 
+def process_audio():
+    """Process audio chunks from the queue and update transcription."""
+    global transcription
+    while is_recording:
+        audio_data = []
+        while not audio_queue.empty():
+            audio_data.append(audio_queue.get())
+        
+        if audio_data:
+            audio_data = np.concatenate(audio_data, axis=0)
+            audio_data = audio_data.flatten()
+            
+            # Process audio with custom Whisper model
+            result = transcriber({"inputs": audio_data})
+            
+            # Update transcription
+            transcription.append(result["text"])
+            
+        time.sleep(0.1)  # Small delay to reduce CPU usage
 
-#@spaces.GPU
-def transcribe(inputs, task):
-    if inputs is None:
-        raise gr.Error("No audio file submitted! Please upload or record an audio file before submitting your request.")
+def start_recording():
+    """Start recording audio."""
+    global is_recording
+    is_recording = True
+    threading.Thread(target=process_audio, daemon=True).start()
+    return gr.update(visible=True), gr.update(visible=False)
 
-    text = pipe(inputs, batch_size=BATCH_SIZE, generate_kwargs={"task": task}, return_timestamps=True)["text"]
+def stop_recording():
+    """Stop recording audio."""
+    global is_recording
+    is_recording = False
+    return gr.update(visible=False), gr.update(visible=True)
 
+def update_transcription(output):
+    """Update the transcription text."""
+    global transcription
+    while True:
+        output.set_value(" ".join(transcription))
+        time.sleep(1)
 
+def save_audio(audio):
+    """Save the recorded audio file."""
+    return audio
 
-    # we can change the file name later here after the backend integration
-    # Save transcribed text as JSON
-
-
+# Gradio interface
+with gr.Blocks() as app:
+    gr.Markdown("# Real-time Custom Whisper Transcription")
     
-    timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
-    filename = f"transcription_{timestamp}.json"
+    with gr.Row():
+        start_btn = gr.Button("Start Recording")
+        stop_btn = gr.Button("Stop Recording", visible=False)
     
-    json_data = {
-        "transcription": text,
-        "task": task,
-        "timestamp": timestamp
-    }
+    output = gr.Textbox(label="Transcription", lines=10)
+    audio_output = gr.Audio(label="Recorded Audio", visible=False)
     
-    with open(filename, "w") as json_file:
-        json.dump(json_data, json_file, indent=4)
+    start_btn.click(start_recording, outputs=[stop_btn, start_btn])
+    stop_btn.click(stop_recording, outputs=[stop_btn, start_btn])
     
-    return text, f"Transcription saved as {filename}"
+    # Start a thread to update transcription every second
+    threading.Thread(target=update_transcription, args=(output,), daemon=True).start()
+    
+    # Save audio file
+    audio_output.change(save_audio, inputs=[audio_output], outputs=[audio_output])
 
+# Start the audio stream
+stream = sd.InputStream(callback=audio_callback, channels=channels, samplerate=samplerate, dtype=dtype)
+stream.start()
 
-
-demo = gr.Blocks()
-
-mf_transcribe = gr.Interface(
-    fn=transcribe,
-    inputs=[
-        gr.Audio(sources="microphone", type="filepath"),
-        gr.Radio(["transcribe", "translate"], label="Task", value="transcribe"),
-    ],
-    outputs=["text", "text"],
-    title="Whisper Large V3 Turbo: Transcribe Audio",
-    description=(
-        "Transcribe long-form microphone or audio inputs with the click of a button!"
-    ),
-    allow_flagging="never",
-)
-
-file_transcribe = gr.Interface(
-    fn=transcribe,
-    inputs=[
-        gr.Audio(sources="upload", type="filepath", label="Audio file"),
-        gr.Radio(["transcribe", "translate"], label="Task", value="transcribe"),
-    ],
-    outputs=["text", "text"],
-    title="Whisper Large V3: Transcribe Audio",
-    description=(
-        "Transcribe long-form microphone or audio inputs with the click of a button! "
-    ),
-    allow_flagging="never",
-)
-
-
-with demo:
-    gr.TabbedInterface([mf_transcribe, file_transcribe], ["Microphone", "Audio file"])
-
-demo.queue().launch()
-
+# Launch the Gradio app
+app.launch()
