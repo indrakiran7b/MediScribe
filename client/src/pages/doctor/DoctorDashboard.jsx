@@ -32,7 +32,7 @@ const DoctorDashboard = () => {
           axios.get(`http://localhost:5000/api/doctor/next?doctorId=${doctorId}`),
           axios.get(`http://localhost:5000/api/doctor/todayappointments?doctorId=${doctorId}`)
         ]);
-        
+
         setStats(statsRes.data || {});
         setRecentAppointments(Array.isArray(recentRes.data) ? recentRes.data : []);
         setNextAppointment(nextRes.data?.message === "No upcoming appointments" ? null : nextRes.data);
@@ -50,15 +50,16 @@ const DoctorDashboard = () => {
     return () => clearInterval(timer);
   }, [doctorId]);
 
-  const handleStartAppointment = (patientId) => {
-    if (patientId) {
-      navigate(`/appointment/${patientId}`);
+  const handleStartAppointment = (appointmentId) => {
+    if (appointmentId) {
+      navigate(`/doctor-page/appointments/${appointmentId}`);
     }
   };
 
   const handleCancelAppointment = async (appointmentId) => {
     if (appointmentId) {
       console.log('Cancelling appointment:', appointmentId);
+      navigate(`/doctor-page/appointments/cancel/${appointmentId}`);
     }
   };
 
@@ -87,8 +88,8 @@ const DoctorDashboard = () => {
                 <AppointmentCard
                   key={index}
                   appointment={appointment}
-                  onStart={() => handleStartAppointment(appointment?.patientId)}
-                  onCancel={() => handleCancelAppointment(appointment?.patientId)}
+                  onStart={() => handleStartAppointment(appointment?.appointmentId)}
+                  onCancel={() => handleCancelAppointment(appointment?.appointmentId)}
                 />
               ))}
             </div>
@@ -100,7 +101,6 @@ const DoctorDashboard = () => {
             </Card>
           )}
         </div>
-
         {/* Right Side - Calendar and Next Appointment */}
         <div className="w-full lg:w-1/3">
           <Card className="mb-6">

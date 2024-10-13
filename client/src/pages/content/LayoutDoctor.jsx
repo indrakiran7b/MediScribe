@@ -1,10 +1,10 @@
 import React from 'react'
-import Navbar from '../../components/Navbar'
 import { Outlet } from 'react-router-dom'
-const Layout = () => {
+import DoctorNavbar from '../../components/DoctorNavbar'
+const LayoutDoctor = () => {
   return (
     <div>
-      <Navbar />
+      <DoctorNavbar />
       <div>
         <Outlet />
       </div>
@@ -13,4 +13,4 @@ const Layout = () => {
   )
 }
 
-export default Layout
+export default LayoutDoctor

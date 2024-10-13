@@ -14,6 +14,9 @@ import Layout from './pages/content/Layout';
 import MedicalHistory from './pages/patient/MedicalHistory';
 import { AuthProvider } from './context/AuthContext';
 import DoctorDashboard from './pages/doctor/DoctorDashboard';
+import DoctorAppointmentsPage from './pages/doctor/DoctorAppointmentsPage';
+import LayoutDoctor from './pages/content/LayoutDoctor';
+import DoctorPatientPage from './pages/doctor/DoctorPatientPage';
 
 function App() {
   return (
@@ -22,8 +25,14 @@ function App() {
         <div className='mx-4 sm:mx-[10%]'>
           <Routes>
             <Route path='/auth' element={<Login />} />
-            <Route path='/doctor-page' element={<DoctorDashboard />}/>
-            <Route path="/" element={<Layout />}>
+            <Route path="/" element={<LayoutDoctor />}>
+              <Route index element={<Home />} />
+              <Route path='/doctor-page' element={<DoctorDashboard />}/>
+              <Route path='/doctor-page/appointments' element={<DoctorAppointmentsPage />}/>
+              <Route path='/doctor-page/appointments/:appointmentId' element={<DoctorPatientPage />}/>
+            </Route>
+            
+            {/* <Route path="/" element={<Layout />}>
               <Route index element={<Home />} />
               <Route path='/about' element={<About />} />
               <Route path='/doctors' element={<Doctor />} />
@@ -34,7 +43,7 @@ function App() {
               <Route path='/my-appointments' element={<MyAppointments />} />
               <Route path='/appointments/:doctorId' element={<AppointmentBookingPage />} />
               
-            </Route>
+            </Route> */}
             <Route path='*' element={<Login />} />
           </Routes>
         </div>

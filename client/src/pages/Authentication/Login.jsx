@@ -98,7 +98,7 @@ const Login = () => {
             navigate('/');
             break;
           case 'doctor':
-            console.log('hi')
+            console.log('hi');
             navigate('/doctor-page');
             break;
           case 'admin':
