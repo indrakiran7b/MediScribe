@@ -156,6 +156,7 @@ exports.getRecentAppointments = async (req, res) => {
       const patient = await Patient.findById(apt.patientId);
       // console.log(patient)
       return {
+        appointmentId:apt._id,
         patientName: patient.firstName + " "  + patient.lastName,
         patientId: patient._id,
         photo: patient.photourl,
@@ -230,5 +231,55 @@ exports.getNextAppointment = async (req, res) => {
     res.json(formattedAppointment);
   } catch (error) {
     res.status(500).json({ message: 'Error fetching next appointment', error: error.message });
+  }
+};
+
+exports.getDoctorAppointments = async (req, res) => {
+  try {
+    const { doctorId } = req.params;
+    const { timeframe } = req.query;
+    let startDate, endDate;
+
+    switch (timeframe) {
+      case 'today':
+        startDate = moment().startOf('day');
+        endDate = moment().endOf('day');
+        break;
+      case 'week':
+        startDate = moment().startOf('week');
+        endDate = moment().endOf('week');
+        break;
+      case 'month':
+        startDate = moment().startOf('month');
+        endDate = moment().endOf('month');
+        break;
+      case 'next-month':
+        startDate = moment().add(1, 'month').startOf('month');
+        endDate = moment().add(1, 'month').endOf('month');
+        break;
+      case 'all':
+      default:
+        startDate = moment(0); // Beginning of time
+        endDate = moment().add(100, 'years'); // Far future
+        break;
+    }
+
+    const appointments = await Appointment.find({
+      doctorId,
+      date: { $gte: startDate.toDate(), $lte: endDate.toDate() }
+    }).populate('patientId', 'firstName lastName');
+
+    const formattedAppointments = appointments.map(apt => ({
+      _id: apt._id,
+      patientName: `${apt.patientId.firstName} ${apt.patientId.lastName}`,
+      date: apt.date,
+      timeSlot: apt.timeSlot,
+      description: apt.description,
+      status: apt.status
+    }));
+
+    res.json(formattedAppointments);
+  } catch (error) {
+    res.status(500).json({ message: 'Error fetching appointments', error: error.message });
   }
 };
