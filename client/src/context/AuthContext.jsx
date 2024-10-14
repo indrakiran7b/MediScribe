@@ -1,14 +1,16 @@
 import  { createContext, useContext, useState, useEffect } from 'react';
 import axios from 'axios';
+import { useNavigate } from 'react-router-dom';
 
 const AuthContext = createContext();
 
 
 export const AuthProvider = ({children}) => {
-  const [user, setUser] = useState('');
+  const [user, setUser] = useState('demo');
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
   const [token, setToken] = useState(null);
+  const navigate = useNavigate();
 
   // Check for token on app load
   // useEffect(() => {
@@ -41,6 +43,7 @@ export const AuthProvider = ({children}) => {
       console.log('response-data',response.data);
       setUser(response.data.userType);
       console.log(user);
+      localStorage.setItem('user', response.data.userType);
       // newToken = response.data.token
       localStorage.setItem('token', response.data.token);
       localStorage.setItem('id1', response.data.patientID);
@@ -76,6 +79,7 @@ export const AuthProvider = ({children}) => {
           }
   
           setUser(response.data.userType);
+          localStorage.setItem('user', response.data.userType);
           localStorage.setItem('token', response.data.token);
           localStorage.setItem('id1', response.data.patientID);
   
@@ -99,9 +103,11 @@ export const AuthProvider = ({children}) => {
     setUser(null);
     localStorage.removeItem('token');
     localStorage.removeItem('id1');
+    localStorage.removeItem('user');
     setToken(null)
     delete api.defaults.headers.common['Authorization'];
     console.log('LogOut is Completed')
+    navigate('/auth');
   };
 
   const checkAuthStatus = async () => {

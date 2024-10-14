@@ -17,10 +17,10 @@ import DoctorDashboard from './pages/doctor/DoctorDashboard';
 import DoctorAppointmentsPage from './pages/doctor/DoctorAppointmentsPage';
 import LayoutDoctor from './pages/content/LayoutDoctor';
 import DoctorPatientPage from './pages/doctor/DoctorPatientPage';
-import { useAuth } from './context/AuthContext';
+
 function AppContent() {
   console.log('hvkudfbvdfj')
-  const { user } = useAuth();
+  const user = localStorage.getItem('user');
   console.log('app.jsx',user)
   return (
    
@@ -29,17 +29,22 @@ function AppContent() {
           <Routes>
             <Route path='/auth' element={<Login />} />
               {/* Conditional rendering based on user type */}
-            {user === 'doctor' ? (
+            {user === 'doctor'? (
               <Route path="/" element={<LayoutDoctor />}>
-                <Route index element={<Home />} />
+                
                 <Route path='/doctor-page' element={<DoctorDashboard />} />
                 <Route path='/contact' element={<Contact />} />
+                <Route path='/about' element={<About />} />
                 <Route path='/doctor-page/appointments' element={<DoctorAppointmentsPage />} />
                 <Route path='/doctor-page/appointments/:appointmentId' element={<DoctorPatientPage />} />
               </Route>
             )
             :
-            (
+            <></>}
+
+
+       
+            {user === 'patient'? (
               <Route path="/" element={<Layout />}>
                 <Route index element={<Home />} />
                 <Route path='/about' element={<About />} />
@@ -51,7 +56,8 @@ function AppContent() {
                 <Route path='/my-appointments' element={<MyAppointments />} />
                 <Route path='/appointments/:doctorId' element={<AppointmentBookingPage />} />
               </Route>
-            )}
+            ):
+            <></>}
             <Route path='*' element={<Login />} />
           </Routes>
         </div>

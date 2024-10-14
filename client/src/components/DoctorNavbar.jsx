@@ -42,7 +42,7 @@ const DoctorNavbar = () => {
               <img className="w-44 cursor-pointer" src={assets.logo1} alt="Logo" onClick={() => navigate('/')} />
                 
               <ul className="hidden md:flex items-center space-x-6 font-medium">
-                <NavItem to="/">Home</NavItem>
+                
                 <NavItem to="/doctor-page">Dashboard</NavItem>
                 <NavItem to="/doctor-page/appointments">Appointments</NavItem>
                 <NavItem to="/contact">Contact</NavItem>

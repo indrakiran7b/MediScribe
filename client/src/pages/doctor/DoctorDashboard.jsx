@@ -63,7 +63,9 @@ const DoctorDashboard = () => {
     }
   };
 
-  if (loading) return <div className="flex justify-center items-center h-screen">Loading...</div>;
+
+  
+  // if (loading) return <div className="flex justify-center items-center h-screen">Loading...</div>;
 
   return (
     <div className="container mx-auto p-4">
