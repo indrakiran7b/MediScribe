@@ -7,6 +7,7 @@ const helmet = require('helmet');
 const cors = require('cors');
 const config = require('./src/config/config');
 const authRoutes = require('./src/routes/authRoutes');
+const path = require('path'); // Import the path module
 
 const specialtyRoutes = require('./src/routes/specialityRoutes');
 const doctorRoutes = require('./src/routes/doctorRoutes');
@@ -28,6 +29,8 @@ const corsOptions = {
 };
 
 app.use(cors(corsOptions));
+app.use('/home/subhash/Documents/MediScribe/Data', express.static(path.join(__dirname, '../Data')));
+
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
