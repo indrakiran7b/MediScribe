@@ -18,6 +18,7 @@ import DoctorAppointmentsPage from './pages/doctor/DoctorAppointmentsPage';
 import LayoutDoctor from './pages/content/LayoutDoctor';
 import DoctorPatientPage from './pages/doctor/DoctorPatientPage';
 import DoctorProfilePage from './pages/doctor/DoctorProfilePage';
+import MedicalHistoryDetails from './pages/patient/MedicalHistoryDetails';
 
 function AppContent() {
   console.log('hvkudfbvdfj')
@@ -46,7 +47,6 @@ function AppContent() {
             <></>}
 
 
-       
             {user === 'patient'? (
               <Route path="/" element={<Layout />}>
                 <Route index element={<Home />} />
@@ -54,6 +54,7 @@ function AppContent() {
                 <Route path='/doctors' element={<Doctor />} />
                 <Route path='/contact' element={<Contact />} />
                 <Route path='/medical-history' element={<MedicalHistory />} />
+                <Route path='/medical-history/:id' element={<MedicalHistoryDetails />} />
                 <Route path='/doctors/:speciality' element={<Doctor />} />
                 <Route path='/my-profile' element={<MyProfile />} />
                 <Route path='/my-appointments' element={<MyAppointments />} />

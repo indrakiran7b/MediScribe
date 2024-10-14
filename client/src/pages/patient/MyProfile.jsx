@@ -7,7 +7,7 @@ import { CalendarIcon, PhoneIcon, Mail, User } from 'lucide-react';
 
 const MyProfile =() =>{
   const [patientData, setPatientData] = useState(null);
-  const [loading, setLoading] = useState(true);
+  // const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const navigate = useNavigate();
 
@@ -31,16 +31,16 @@ const MyProfile =() =>{
       } catch (err) {
         setError(err.message);
       } finally {
-        setLoading(false);
+        // setLoading(false);
       }
     };
 
     fetchPatientData();
   }, [navigate]);
 
-  if (loading) {
-    return <div className="flex justify-center items-center h-screen">Loading...</div>;
-  }
+  // if (loading) {
+  //   return <div className="flex justify-center items-center h-screen">Loading...</div>;
+  // }
 
   if (error) {
     return <div className="text-red-500 text-center">{error}</div>;
