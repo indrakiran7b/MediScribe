@@ -1,94 +1,194 @@
-// // import React, { useState, useEffect } from 'react';
-// // import { useLocation, useNavigate } from 'react-router-dom';
-// // import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
-// // import { Input } from "@/components/ui/input";
-// // import { Button } from "@/components/ui/button";
-// // import { Label } from "@/components/ui/label";
-// // import axios from 'axios';
+import React from 'react';
+import { motion } from 'framer-motion';
+import { Card, CardContent } from '@/components/ui/card';
+import { Badge } from '@/components/ui/badge';
+import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
+import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 
-// // const OTPVerification = () => {
-// //   const [otp, setOtp] = useState('');
-// //   const [timeLeft, setTimeLeft] = useState(60); // 5 minutes in seconds
-// //   const [error, setError] = useState('');
-// //   const location = useLocation();
-// //   const navigate = useNavigate();
-// //   const email = location.state?.email;
+const AboutPage = () => {
+  const teamMembers = [
+    { name: "Khambampati Subhash", role: "Team Member", avatar: "/api/placeholder/32/32" },
+    { name: "Indra Kiran B", role: "Team Member", avatar: "/api/placeholder/32/32" },
+    { name: "Ayyappa Swamy Thati", role: "Team Member", avatar: "/api/placeholder/32/32" },
+    { name: "Sai Sumitha T", role: "Team Member", avatar: "/api/placeholder/32/32" },
+    { name: "Rahul Krishnan", role: "Mentor", avatar: "/api/placeholder/32/32" }
+  ];
 
-// //   useEffect(() => {
-// //     if (timeLeft > 0) {
-// //       const timerId = setTimeout(() => setTimeLeft(timeLeft - 1), 1000);
-// //       return () => clearTimeout(timerId);
-// //     }
-// //   }, [timeLeft]);
+  const features = [
+    "Appointment Booking",
+    "Voice Recording",
+    "Transcription",
+    "Summarization",
+    "Structured Output"
+  ];
 
-// //   const handleSubmit = async (e) => {
-// //     e.preventDefault();
-// //     setError('');
-// //     try {
-// //       await axios.post('/api/verify-otp', { email, otp });
-// //       navigate('/dashboard');
-// //     } catch (error) {
-// //       setError(error.response?.data?.message || 'Invalid OTP');
-// //     }
-// //   };
+  const industryNeeds = [
+    "Efficient patient-doctor communication",
+    "Accurate medical record keeping",
+    "Time-saving documentation processes",
+    "Enhanced accessibility to medical information",
+    "Improved patient care through structured data"
+  ];
 
-// //   const handleResend = async () => {
-// //     setError('');
-// //     try {
-// //       await axios.post('/api/resend-otp', { email });
-// //       setTimeLeft(60);
-// //     } catch (error) {
-// //       setError(error.response?.data?.message || 'Error resending OTP');
-// //     }
-// //   };
+  const containerVariants = {
+    hidden: { opacity: 0 },
+    visible: {
+      opacity: 1,
+      transition: {
+        delayChildren: 0.3,
+        staggerChildren: 0.2
+      }
+    }
+  };
 
-// //   return (
-// //     <div className='flex justify-center items-center mt-20'>
-// //     <Card className="w-[500px]">
-// //       <CardHeader>
-// //         <CardTitle>Verify OTP</CardTitle>
-// //         <CardDescription>Enter the OTP sent to {email}</CardDescription>
-// //       </CardHeader>
-// //       <CardContent>
-// //         <form onSubmit={handleSubmit} className="space-y-4">
-// //           <div className="space-y-2">
-// //             <Label htmlFor="otp">OTP</Label>
-// //             <Input
-// //               id="otp"
-// //               name="otp"
-// //               value={otp}
-// //               onChange={(e) => setOtp(e.target.value)}
-// //               placeholder="Enter 6-digit OTP"
-// //               required
-// //             />
-// //           </div>
-// //           <p>Time left: {Math.floor(timeLeft / 60)}:{(timeLeft % 60).toString().padStart(2, '0')}</p>
-// //           {error && <p className="text-red-500">{error}</p>}
-// //           <p>Check your email for OTP</p>
-// //         </form>
-// //       </CardContent>
-// //       <CardFooter className="flex justify-between">
-// //         <Button onClick={handleResend} disabled={timeLeft > 0}>Resend OTP</Button>
-// //         <Button onClick={handleSubmit}>Verify</Button>
-// //       </CardFooter>
-// //     </Card>
-// //     </div>
-// //   );
-// // };
+  const itemVariants = {
+    hidden: { y: 20, opacity: 0 },
+    visible: {
+      y: 0,
+      opacity: 1
+    }
+  };
 
-// // export default OTPVerification;
-
-
-
-
-
-
-const DoctorDashboard = () => {
   return (
-    <>
-    Hi
-    </>
-  )
+    <motion.div
+      className="container mx-auto px-4 py-8 max-w-4xl"
+      initial="hidden"
+      animate="visible"
+      variants={containerVariants}
+    >
+      <motion.h1 
+        className="text-5xl font-bold text-center mb-8 bg-gradient-to-r from-blue-600 to-purple-600 text-transparent bg-clip-text"
+        variants={itemVariants}
+      >
+        About MediScribe
+      </motion.h1>
+      
+      <motion.section className="mb-12" variants={itemVariants}>
+        <h2 className="text-3xl font-semibold mb-4 text-blue-700">Our Mission</h2>
+        <Card className="bg-gradient-to-br from-blue-50 to-purple-50 shadow-lg">
+          <CardContent className="p-6">
+            <p className="text-lg text-gray-700 mb-4">
+              MediScribe is revolutionizing the healthcare industry by bridging the gap between patients and doctors. 
+              Our innovative platform streamlines the entire process from appointment booking to consultation 
+              documentation, making healthcare more accessible and efficient.
+            </p>
+            <p className="text-lg text-gray-700">
+              As a final year project from Amrita Vishwa Vidyapeetham's AIE A branch, we're committed to 
+              creating a solution that addresses real-world challenges in the medical field.
+            </p>
+          </CardContent>
+        </Card>
+      </motion.section>
+
+      <motion.section className="mb-12" variants={itemVariants}>
+        <h2 className="text-3xl font-semibold mb-4 text-blue-700">Key Features</h2>
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+          {features.map((feature, index) => (
+            <motion.div key={index} variants={itemVariants}>
+              <Card className="bg-white hover:bg-blue-50 transition-colors duration-300 shadow-md hover:shadow-xl">
+                <CardContent className="p-4">
+                  <Badge className="mb-2" variant="secondary">{feature}</Badge>
+                  <p className="text-gray-700">{getFeatureDescription(feature)}</p>
+                </CardContent>
+              </Card>
+            </motion.div>
+          ))}
+        </div>
+      </motion.section>
+
+      <motion.section className="mb-12" variants={itemVariants}>
+        <h2 className="text-3xl font-semibold mb-4 text-blue-700">Industry Impact</h2>
+        <Card className="bg-gradient-to-br from-purple-50 to-pink-50 shadow-lg">
+          <CardContent className="p-6">
+            <ul className="space-y-2">
+              {industryNeeds.map((need, index) => (
+                <motion.li 
+                  key={index} 
+                  className="text-gray-700 flex items-center"
+                  initial={{ opacity: 0, x: -20 }}
+                  animate={{ opacity: 1, x: 0 }}
+                  transition={{ delay: index * 0.1 }}
+                >
+                  <span className="text-purple-500 mr-2">•</span> {need}
+                </motion.li>
+              ))}
+            </ul>
+          </CardContent>
+        </Card>
+      </motion.section>
+
+      <motion.section className="mb-12" variants={itemVariants}>
+        <h2 className="text-3xl font-semibold mb-4 text-blue-700">Our Team</h2>
+        <div className="grid grid-cols-2 md:grid-cols-3 gap-4">
+          {teamMembers.map((member, index) => (
+            <motion.div key={index} variants={itemVariants}>
+              <Card className="bg-white hover:bg-gray-50 transition-colors duration-300 shadow-md hover:shadow-xl">
+                <CardContent className="p-4 text-center">
+                  <Avatar className="mx-auto mb-2">
+                    <AvatarImage src={member.avatar} alt={member.name} />
+                    <AvatarFallback>{member.name.split(' ').map(n => n[0]).join('')}</AvatarFallback>
+                  </Avatar>
+                  <p className="font-medium">{member.name}</p>
+                  <p className="text-sm text-gray-500">{member.role}</p>
+                </CardContent>
+              </Card>
+            </motion.div>
+          ))}
+        </div>
+      </motion.section>
+
+      <motion.section variants={itemVariants}>
+        <h2 className="text-3xl font-semibold mb-4 text-blue-700">Our Vision</h2>
+        <Tabs defaultValue="vision" className="w-full">
+          <TabsList className="grid w-full grid-cols-2">
+            <TabsTrigger value="vision">Vision</TabsTrigger>
+            <TabsTrigger value="future">Future Plans</TabsTrigger>
+          </TabsList>
+          <TabsContent value="vision">
+            <Card>
+              <CardContent className="p-6">
+                <p className="text-lg text-gray-700">
+                  At MediScribe, we envision a future where technology seamlessly integrates with healthcare, 
+                  enhancing the quality of patient care and reducing the administrative burden on medical professionals. 
+                  By leveraging cutting-edge voice recognition, natural language processing, and data structuring 
+                  technologies, we aim to set new standards in medical documentation and patient-doctor interaction.
+                </p>
+              </CardContent>
+            </Card>
+          </TabsContent>
+          <TabsContent value="future">
+            <Card>
+              <CardContent className="p-6">
+                <p className="text-lg text-gray-700">
+                  Looking ahead, we plan to expand our platform to include AI-driven diagnosis assistance, 
+                  personalized treatment recommendations, and integration with wearable health devices. 
+                  Our goal is to create a comprehensive ecosystem that supports both patients and healthcare 
+                  providers throughout the entire medical journey.
+                </p>
+              </CardContent>
+            </Card>
+          </TabsContent>
+        </Tabs>
+      </motion.section>
+    </motion.div>
+  );
 };
 
-export default DoctorDashboard;
+const getFeatureDescription = (feature) => {
+  switch (feature) {
+    case "Appointment Booking":
+      return "Effortlessly schedule appointments with the right specialists.";
+    case "Voice Recording":
+      return "Capture consultations with high-quality audio recording.";
+    case "Transcription":
+      return "Convert spoken words into accurate written text.";
+    case "Summarization":
+      return "Generate concise summaries of medical consultations.";
+    case "Structured Output":
+      return "Organize medical information into standardized, easily accessible formats.";
+    default:
+      return "";
+  }
+};
+
+export default AboutPage;

@@ -17,6 +17,7 @@ import DoctorDashboard from './pages/doctor/DoctorDashboard';
 import DoctorAppointmentsPage from './pages/doctor/DoctorAppointmentsPage';
 import LayoutDoctor from './pages/content/LayoutDoctor';
 import DoctorPatientPage from './pages/doctor/DoctorPatientPage';
+import DoctorProfilePage from './pages/doctor/DoctorProfilePage';
 
 function AppContent() {
   console.log('hvkudfbvdfj')
@@ -29,12 +30,14 @@ function AppContent() {
           <Routes>
             <Route path='/auth' element={<Login />} />
               {/* Conditional rendering based on user type */}
+
             {user === 'doctor'? (
               <Route path="/" element={<LayoutDoctor />}>
                 
                 <Route path='/doctor-page' element={<DoctorDashboard />} />
                 <Route path='/contact' element={<Contact />} />
                 <Route path='/about' element={<About />} />
+                <Route path='/my-profile' element={<DoctorProfilePage />} />
                 <Route path='/doctor-page/appointments' element={<DoctorAppointmentsPage />} />
                 <Route path='/doctor-page/appointments/:appointmentId' element={<DoctorPatientPage />} />
               </Route>

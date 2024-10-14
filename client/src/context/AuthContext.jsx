@@ -7,7 +7,7 @@ const AuthContext = createContext();
 
 export const AuthProvider = ({children}) => {
   const [user, setUser] = useState('demo');
-  const [loading, setLoading] = useState(false);
+  
   const [error, setError] = useState(null);
   const [token, setToken] = useState(null);
   const navigate = useNavigate();
@@ -35,7 +35,7 @@ export const AuthProvider = ({children}) => {
   });
 
   const login = async (credentials) => {
-    setLoading(true);
+    
     setError(null);
     console.log('credentials',credentials)
     try {
@@ -54,18 +54,18 @@ export const AuthProvider = ({children}) => {
         setToken(null)
       }
       api.defaults.headers.common['Authorization'] = `Bearer ${response.data.token}`;
-      setLoading(false);
+      
       return response.data;
     } catch (err) {
       setError(err.response?.data?.message || 'An error occurred during login');
-      setLoading(false);
+      
       throw err;
     }
   };
 
   
     const signup = async (userData) => {
-      setLoading(true);
+      
       setError(null);
       try {
           const response = await api.post('/auth/signup', userData);
@@ -74,7 +74,7 @@ export const AuthProvider = ({children}) => {
           if (response.status === 400) {
               console.log('Error 400:', response.data.message);
               setError(response.data.message);
-              setLoading(false);
+
               return;
           }
   
@@ -90,11 +90,10 @@ export const AuthProvider = ({children}) => {
           }
   
           api.defaults.headers.common['Authorization'] = `Bearer ${response.data.token}`;
-          setLoading(false);
+
           return response.data;
       } catch (err) {
           setError(err.response?.data?.message || 'An error occurred during signup');
-          setLoading(false);
           throw err;
       }
   };
@@ -133,7 +132,7 @@ export const AuthProvider = ({children}) => {
 // }, []);
 
   return (
-    <AuthContext.Provider value={{ user, login, signup, logout, loading, error, token, setToken, checkAuthStatus }}>
+    <AuthContext.Provider value={{ user, login, signup, logout,  error, token, setToken, checkAuthStatus }}>
       {children}
     </AuthContext.Provider>
   );

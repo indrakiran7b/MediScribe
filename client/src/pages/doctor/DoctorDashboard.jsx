@@ -20,12 +20,12 @@ const DoctorDashboard = () => {
   const [nextAppointment, setNextAppointment] = useState(null);
   const [todayAppointments, setTodayAppointments] = useState([]);
   const [currentTime, setCurrentTime] = useState(new Date());
-  const [loading, setLoading] = useState(true);
+
   const doctorId = localStorage.getItem('id1');
   useEffect(() => {
     const fetchData = async () => {
       try {
-        setLoading(true);
+     
         const [statsRes, recentRes, nextRes, todayRes] = await Promise.all([
           axios.get(`http://localhost:5000/api/dashboard/stats?doctorId=${doctorId}`),
           axios.get(`http://localhost:5000/api/doctor/recent?doctorId=${doctorId}`),
@@ -39,9 +39,7 @@ const DoctorDashboard = () => {
         setTodayAppointments(Array.isArray(todayRes.data) ? todayRes.data : []);
       } catch (error) {
         console.error('Error fetching data:', error);
-      } finally {
-        setLoading(false);
-      }
+      } 
     };
 
     fetchData();
@@ -64,8 +62,8 @@ const DoctorDashboard = () => {
   };
 
 
+
   
-  // if (loading) return <div className="flex justify-center items-center h-screen">Loading...</div>;
 
   return (
     <div className="container mx-auto p-4">

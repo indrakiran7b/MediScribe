@@ -1,6 +1,7 @@
 import React from 'react'
 import { Outlet } from 'react-router-dom'
 import DoctorNavbar from '../../components/DoctorNavbar'
+import Footer from './Footer'
 const LayoutDoctor = () => {
   return (
     <div>
@@ -8,6 +9,7 @@ const LayoutDoctor = () => {
       <div>
         <Outlet />
       </div>
+      <Footer />
       
     </div>
   )

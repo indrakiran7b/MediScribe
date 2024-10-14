@@ -591,7 +591,6 @@ const AppointmentBookingPage = () => {
   const [selectedTime, setSelectedTime] = useState(null);
   const [description, setDescription] = useState('');
   const [bookingStatus, setBookingStatus] = useState(null);
-  const [loading, setLoading] = useState(true);
   const today = startOfDay(new Date());
   const { toast } = useToast()
   
@@ -608,10 +607,7 @@ const AppointmentBookingPage = () => {
         console.log(response.data);
       } catch (error) {
         console.error('Error fetching doctor info:', error);
-      } finally {
-        setLoading(false);
-
-      }
+      } 
     };
 
     fetchDoctorInfo();
@@ -729,9 +725,7 @@ const AppointmentBookingPage = () => {
     return !doctor.availableTimeSlots.some(day => day.day === dayOfWeek);
   };
 
-  if (loading) {
-    return <div className="flex justify-center items-center h-screen">Loading...</div>;
-  }
+ 
 
   if (!doctor) {
     return <div className="flex justify-center items-center h-screen">Doctor not found</div>;

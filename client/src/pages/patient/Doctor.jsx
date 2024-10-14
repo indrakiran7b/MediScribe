@@ -11,7 +11,7 @@ const Doctor = () => {
   const [specialties, setSpecialties] = useState([]);
   const [selectedSpecialty, setSelectedSpecialty] = useState("");
   const [doctors, setDoctors] = useState([]);
-  const [loading, setLoading] = useState(false);  // New loading state
+  
   const navigate = useNavigate();
   const {checkAuthStatus} = useAuth();
 
@@ -48,7 +48,7 @@ const Doctor = () => {
   };
 
   const fetchDoctors = async (specialtyId) => {
-    setLoading(true);  // Show loading state
+   
     try {
       const response = await axios.get(`http://localhost:5000/api/doctors/specialty/${specialtyId}`, {
         headers: { Authorization: `Bearer ${localStorage.getItem('token')}` }
@@ -57,9 +57,7 @@ const Doctor = () => {
     } catch (error) {
       console.error('Error fetching doctors:', error);
     }
-    finally {
-      setLoading(false);  // Hide loading state
-    }
+    
   };
   const handleAppointment= (doctor)=>{
     navigate(`/appointments/${doctor._id}`)
