@@ -5,12 +5,17 @@ const AuthContext = createContext();
 
 
 export const AuthProvider = ({children}) => {
-  const [user, setUser] = useState(null);
+  const [user, setUser] = useState('');
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
   const [token, setToken] = useState(null);
 
   // Check for token on app load
+  // useEffect(() => {
+  //   if (user) {
+  //     console.log("User updated:", user);
+  //   }
+  // }, [user]);
   useEffect(() => {
     const storedToken = localStorage.getItem('token');
     if (storedToken) {
@@ -35,6 +40,7 @@ export const AuthProvider = ({children}) => {
       const response = await api.post('/auth/login', credentials);
       console.log('response-data',response.data);
       setUser(response.data.userType);
+      console.log(user);
       // newToken = response.data.token
       localStorage.setItem('token', response.data.token);
       localStorage.setItem('id1', response.data.patientID);
@@ -116,7 +122,9 @@ export const AuthProvider = ({children}) => {
     }
   };
 
-  // useEffect(() =>  checkAuthStatus(), []);
+//   useEffect(() => {
+//     checkAuthStatus();
+// }, []);
 
   return (
     <AuthContext.Provider value={{ user, login, signup, logout, loading, error, token, setToken, checkAuthStatus }}>
